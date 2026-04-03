@@ -1,0 +1,63 @@
+.action-menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.action-menu-dropdown {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 10000; /* Higher z-index for portal */
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: menu-fade-in 0.2s ease-out;
+}
+
+/* Orientation positioning is now handled by inline styles in the component */
+
+@keyframes menu-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.action-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.action-menu-item:hover {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.action-menu-item.destructive {
+  color: var(--destructive);
+}
+
+.action-menu-item.destructive:hover {
+  background: color-mix(in srgb, var(--destructive) 10%, transparent);
+  color: var(--destructive);
+}
+
+.action-menu-item svg {
+  color: var(--muted-foreground);
+}
+
+.action-menu-item:hover svg {
+  color: inherit;
+}
