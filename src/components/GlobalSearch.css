@@ -1,0 +1,206 @@
+.global-search-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.global-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.global-search-box.focused {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.global-search-icon {
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+}
+
+.global-search-input {
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  min-width: 0;
+}
+
+.global-search-input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.global-search-clear {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--secondary);
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.global-search-clear:hover {
+  background: var(--border);
+}
+
+/* Dropdown */
+.global-search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px -4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+  z-index: 500;
+  overflow: hidden;
+  animation: search-drop 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+@keyframes search-drop {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Group heading */
+.search-group-heading {
+  padding: 8px 14px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Result row */
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.search-result-item:hover,
+.search-result-item.active {
+  background: color-mix(in srgb, var(--secondary) 60%, transparent);
+}
+
+.search-result-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.search-result-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-result-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-sub {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-arrow {
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.search-result-item.active .search-result-arrow,
+.search-result-item:hover .search-result-arrow {
+  opacity: 1;
+}
+
+/* Highlight */
+mark.search-highlight {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  color: var(--primary);
+  font-weight: 700;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* Empty state */
+.search-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 24px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+
+/* Footer keyboard hints */
+.search-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--secondary) 30%, transparent);
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.search-footer kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--background);
+  font-size: 10px;
+  font-family: monospace;
+  color: var(--foreground);
+  margin-right: 3px;
+}
+
+/* Mobile: full-width dropdown fixed */
+@media (max-width: 640px) {
+  .global-search-wrapper {
+    max-width: none;
+    display: none;
+  }
+}

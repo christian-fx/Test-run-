@@ -22,10 +22,11 @@ import {
   Wifi,
   Pencil,
   Trash2,
-  Package,
-  Loader2
+  Package
 } from 'lucide-react';
 import './Categories.css';
+import { SkeletonStat, SkeletonRow } from '../../components/Skeleton';
+import EmptyState from '../../components/EmptyState';
 
 // API
 import { subscribeToCategories, deleteCategory } from '../../api/categories';
@@ -146,28 +147,30 @@ const Categories = () => {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-title">Total Categories</div>
-            <div className="stat-icon"><FolderTree size={18} /></div>
+      {loading ? (
+        <div className="stats-grid">
+          <SkeletonStat /><SkeletonStat />
+        </div>
+      ) : (
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-title">Total Categories</div>
+              <div className="stat-icon"><FolderTree size={18} /></div>
+            </div>
+            <div className="stat-value">{categories.length}</div>
+            <div className="text-sm text-muted" style={{ marginTop: '8px' }}>Across all departments</div>
           </div>
-          <div className="stat-value">{loading ? '...' : categories.length}</div>
-          <div className="text-sm text-muted" style={{ marginTop: '8px' }}>
-            Across all departments
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-title">Active Products</div>
+              <div className="stat-icon"><Package size={18} /></div>
+            </div>
+            <div className="stat-value">{products.length}</div>
+            <div className="text-sm text-muted" style={{ marginTop: '8px' }}>Live in catalog</div>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-title">Active Products</div>
-            <div className="stat-icon"><Package size={18} /></div>
-          </div>
-          <div className="stat-value">{loading ? '...' : products.length}</div>
-          <div className="text-sm text-muted" style={{ marginTop: '8px' }}>
-            Live in catalog
-          </div>
-        </div>
-      </div>
+      )}
 
       <div className="filters-bar">
         <div className="filters-left">
@@ -250,27 +253,20 @@ const Categories = () => {
               })}
               {!loading && filteredCategories.length === 0 && (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '64px', color: 'var(--muted-foreground)' }}>
-                    <div className="flex flex-col items-center gap-2">
-                       <FolderTree size={32} opacity={0.2} />
-                       <div style={{ fontSize: '16px', fontWeight: 500, color: 'var(--foreground)' }}>
-                         No {statusFilter === 'All' ? '' : statusFilter.toLowerCase()} categories found
-                       </div>
-                       <p className="text-sm">Try adjusting your search or filters.</p>
-                    </div>
+                  <td colSpan="6" style={{ padding: 0 }}>
+                    <EmptyState 
+                      Icon={FolderTree} 
+                      title={`No ${statusFilter === 'All' ? '' : statusFilter.toLowerCase()} categories found`}
+                      message="Try adjusting your search or filters to find what you're looking for."
+                      action={searchTerm || statusFilter !== 'All' ? () => { setSearchTerm(''); setStatusFilter('All'); } : handleAddClick}
+                      actionLabel={searchTerm || statusFilter !== 'All' ? "Clear filters" : "Add Category"}
+                    />
                   </td>
                 </tr>
               )}
-              {loading && (
-                <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '48px' }}>
-                    <div className="flex flex-col items-center gap-2">
-                        <Loader2 className="animate-spin" size={24} color="var(--primary)" />
-                        <span className="text-sm text-muted">Syncing data...</span>
-                    </div>
-                  </td>
-                </tr>
-              )}
+              {loading && Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonRow key={i} cols={6} />
+              ))}
             </tbody>
           </table>
         </div>

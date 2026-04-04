@@ -13,6 +13,7 @@ import {
 import './Dashboard.css';
 import RevenueChart from '../../components/RevenueChart';
 import { SkeletonStat, SkeletonRow } from '../../components/Skeleton';
+import EmptyState from '../../components/EmptyState';
 
 // API
 import { subscribeToProducts } from '../../api/products';
@@ -186,10 +187,11 @@ const Dashboard = () => {
               </table>
             )}
             {!loading && recentOrders.length === 0 && (
-              <div className="empty-panel">
-                <Clock size={28} opacity={0.2} />
-                <span>No orders yet</span>
-              </div>
+              <EmptyState 
+                Icon={Clock} 
+                title="No orders yet" 
+                message="Recent orders will appear here once customers start purchasing."
+              />
             )}
             {!loading && recentOrders.map((order) => {
               const raw = order.order_date || order.orderDate || order.created_at;

@@ -64,9 +64,10 @@ export const subscribeToCollection = (table, callback, orderField = "created_at"
   // Initial fetch
   getCollection(table, orderField).then(callback);
 
-  // Subscribe to changes
+  // Subscribe to changes with a unique channel name per instance
+  const channelName = `${table}_${Math.random().toString(36).substring(7)}`;
   const subscription = supabase
-    .channel(`${table}_changes`)
+    .channel(channelName)
     .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
       // Re-fetch everything on any change (simplest for small admin collections)
       getCollection(table, orderField).then(callback);

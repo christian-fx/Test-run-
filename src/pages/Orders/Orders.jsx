@@ -11,11 +11,15 @@ import {
   Eye,
   Truck,
   FileText,
-  Trash2
+  Trash2,
+  Package,
+  Users
 } from 'lucide-react';
 import './Orders.css';
 import { useToast } from '../../components/useToast';
 import { SkeletonRow } from '../../components/Skeleton';
+import EmptyState from '../../components/EmptyState';
+import BulkActionBar from '../../components/BulkActionBar';
 
 // API
 import { subscribeToOrders, deleteOrder, updateOrder } from '../../api/orders';
@@ -38,6 +42,7 @@ const Orders = () => {
   const [statusFilter, setStatusFilter] = useState('All');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
   useEffect(() => {
     const unsubscribe = subscribeToOrders((data) => {
@@ -91,10 +96,58 @@ const Orders = () => {
     try {
       await deleteOrder(selectedOrder.id);
       setShowDeleteModal(false);
-      toast('Order cancelled and deleted.');
+      toast('Order deleted successfully.');
       setSelectedOrder(null);
+      // Remove from selection if it was there
+      const newSelected = new Set(selectedIds);
+      newSelected.delete(selectedOrder.id);
+      setSelectedIds(newSelected);
     } catch {
       toast('Failed to delete order.', 'error');
+    }
+  };
+
+  // --- Bulk Actions ---
+  const toggleSelectAll = () => {
+    if (selectedIds.size === paginatedOrders.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginatedOrders.map(o => o.id)));
+    }
+  };
+
+  const toggleSelectRow = (id) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleBulkStatusUpdate = async (status) => {
+    const count = selectedIds.size;
+    try {
+      const idsToUpdate = Array.from(selectedIds);
+      await Promise.all(idsToUpdate.map(id => updateOrder(id, { status })));
+      setSelectedIds(new Set());
+      toast(`Successfully updated ${count} orders to ${status}.`, 'success');
+    } catch {
+      toast('Failed to update some orders.', 'error');
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const count = selectedIds.size;
+    if (!window.confirm(`Are you sure you want to delete ${count} orders? This cannot be undone.`)) return;
+    try {
+      const idsToDelete = Array.from(selectedIds);
+      await Promise.all(idsToDelete.map(id => deleteOrder(id)));
+      setSelectedIds(new Set());
+      toast(`Successfully deleted ${count} orders.`, 'success');
+    } catch {
+      toast('Failed to delete some orders.', 'error');
     }
   };
 
@@ -194,7 +247,14 @@ const Orders = () => {
           <table className="table-w">
             <thead>
               <tr>
-                <th style={{ width: '40px' }}>#</th>
+                <th style={{ width: '40px' }}>
+                  <input 
+                    type="checkbox" 
+                    className="table-checkbox"
+                    checked={paginatedOrders.length > 0 && selectedIds.size === paginatedOrders.length}
+                    onChange={toggleSelectAll}
+                  />
+                </th>
                 <th>Order ID</th>
                 <th>Customer</th>
                 <th>Date</th>
@@ -204,9 +264,16 @@ const Orders = () => {
               </tr>
             </thead>
             <tbody>
-              {!loading && paginatedOrders.map((order, idx) => (
-                <tr key={order.id}>
-                  <td className="text-muted text-xs">{(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}</td>
+              {!loading && paginatedOrders.map((order) => (
+                <tr key={order.id} className={selectedIds.has(order.id) ? 'row-selected' : ''}>
+                  <td>
+                    <input 
+                      type="checkbox" 
+                      className="table-checkbox"
+                      checked={selectedIds.has(order.id)}
+                      onChange={() => toggleSelectRow(order.id)}
+                    />
+                  </td>
                   <td className="font-medium">{order.id}</td>
                   <td>
                     <div className="flex items-center gap-2">
@@ -252,14 +319,14 @@ const Orders = () => {
               ))}
               {!loading && filteredOrders.length === 0 && (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '64px', color: 'var(--muted-foreground)' }}>
-                    <div className="flex flex-col items-center gap-2">
-                       <ShoppingBag size={32} opacity={0.2} />
-                       <div style={{ fontSize: '16px', fontWeight: 500, color: 'var(--foreground)' }}>
-                         No {statusFilter === 'All' ? '' : statusFilter.toLowerCase()} orders found
-                       </div>
-                       <p className="text-sm">Try adjusting your search or filters.</p>
-                    </div>
+                  <td colSpan="7" style={{ padding: 0 }}>
+                    <EmptyState 
+                      Icon={ShoppingBag} 
+                      title={`No ${statusFilter === 'All' ? '' : statusFilter.toLowerCase()} orders found`}
+                      message="Try adjusting your search or filters to find what you're looking for."
+                      action={() => { setSearchTerm(''); setStatusFilter('All'); }}
+                      actionLabel="Clear filters"
+                    />
                   </td>
                 </tr>
               )}
@@ -303,6 +370,16 @@ const Orders = () => {
         title="Cancel Order?"
         message={`Are you sure you want to cancel and delete order "${selectedOrder?.id}"? This action cannot be undone.`}
         confirmLabel="Cancel Order"
+      />
+
+      <BulkActionBar 
+        selectedCount={selectedIds.size}
+        onClear={() => setSelectedIds(new Set())}
+        actions={[
+          { label: 'Mark Shipped', icon: Truck, onClick: () => handleBulkStatusUpdate('Shipped') },
+          { label: 'Mark Delivered', icon: CheckCircle2, variant: 'success', onClick: () => handleBulkStatusUpdate('Delivered') },
+          { label: 'Delete', icon: Trash2, variant: 'danger', onClick: handleBulkDelete }
+        ]}
       />
     </div>
   );

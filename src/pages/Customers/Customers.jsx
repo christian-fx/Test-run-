@@ -16,6 +16,7 @@ import {
 import './Customers.css';
 import { useToast } from '../../components/useToast';
 import { SkeletonStat, SkeletonRow } from '../../components/Skeleton';
+import EmptyState from '../../components/EmptyState';
 
 // API
 import { subscribeToCustomers, deleteCustomer, updateCustomer } from '../../api/customers';
@@ -234,14 +235,14 @@ const Customers = () => {
               ))}
               {!loading && filteredCustomers.length === 0 && (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '64px', color: 'var(--muted-foreground)' }}>
-                    <div className="flex flex-col items-center gap-2">
-                       <Users size={32} opacity={0.2} />
-                       <div style={{ fontSize: '16px', fontWeight: 500, color: 'var(--foreground)' }}>
-                         No {statusFilter === 'All' ? '' : statusFilter.toLowerCase()} customers found
-                       </div>
-                       <p className="text-sm">Try adjusting your search or filters.</p>
-                    </div>
+                  <td colSpan="7" style={{ padding: 0 }}>
+                    <EmptyState 
+                      Icon={Users} 
+                      title={`No ${statusFilter === 'All' ? '' : statusFilter.toLowerCase()} customers found`}
+                      message="Try adjusting your search or filters to find what you're looking for."
+                      action={() => { setSearchTerm(''); setStatusFilter('All'); }}
+                      actionLabel="Clear filters"
+                    />
                   </td>
                 </tr>
               )}

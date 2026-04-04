@@ -27,6 +27,7 @@ import './Layout.css';
 import { logout } from '../../api/auth';
 import { useAuth } from '../../context/useAuth';
 import NotificationBell from '../NotificationBell';
+import GlobalSearch from '../GlobalSearch';
 import { subscribeToSettings } from '../../api/settings';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -167,35 +168,8 @@ const Sidebar = ({ isOpen, onClose }) => {
 
 const Header = ({ onMenuToggle }) => {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
 
   const profileImg = user?.profile?.avatar || (user?.email ? `https://ui-avatars.com/api/?name=${user.email}&background=random` : null);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return;
-
-    // Intelligent routing based on query keywords
-    if (q.includes('order') || q.startsWith('#')) {
-      navigate('/orders');
-    } else if (q.includes('product') || q.includes('item')) {
-      navigate('/products');
-    } else if (q.includes('customer') || q.includes('user') || q.includes('@')) {
-      navigate('/customers');
-    } else if (q.includes('setting') || q.includes('config')) {
-      navigate('/settings');
-    } else if (q.includes('analytic') || q.includes('revenue') || q.includes('report')) {
-      navigate('/');
-    } else if (q.includes('categor')) {
-      navigate('/categories');
-    } else {
-      // Default: go to orders (most common admin action)
-      navigate('/orders');
-    }
-    setSearchQuery('');
-  };
 
   if (loading) {
     return (
@@ -212,16 +186,7 @@ const Header = ({ onMenuToggle }) => {
       <button className="mobile-menu-btn" onClick={onMenuToggle}>
         <Menu size={22} />
       </button>
-      <form className="search-container" onSubmit={handleSearch}>
-        <Search size={18} color="var(--muted-foreground)" />
-        <input 
-          type="text" 
-          placeholder="Search orders, products, or customers..." 
-          className="search-input"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </form>
+      <GlobalSearch />
       <div className="header-actions">
         <NotificationBell />
         <img 

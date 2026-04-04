@@ -11,20 +11,25 @@ import {
   AlertCircle,
   EyeIcon,
   Pencil,
-  Trash2
+  Trash2,
+  Archive,
+  CheckCircle2
 } from 'lucide-react';
 import './Products.css';
 import { useToast } from '../../components/useToast';
 import { SkeletonStat, SkeletonRow } from '../../components/Skeleton';
+import EmptyState from '../../components/EmptyState';
 
 // API
 import { subscribeToProducts, deleteProduct } from '../../api/products';
+import { createNotification, getNotifications } from '../../api/notifications';
 
 // Components
 import AddProductModal from '../../components/AddProductModal';
 import ProductDetailsModal from '../../components/ProductDetailsModal';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import ActionMenu from '../../components/ActionMenu';
+import BulkActionBar from '../../components/BulkActionBar';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -41,6 +46,7 @@ const Products = () => {
   const [statusFilter, setStatusFilter] = useState('All');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
   const handleAddClick = () => {
     setSelectedProduct(null);
@@ -58,9 +64,41 @@ const Products = () => {
     const unsubscribe = subscribeToProducts((data) => {
       setProducts(data);
       setLoading(false);
+      checkStockAlerts(data);
     });
     return () => unsubscribe();
   }, []);
+
+  const checkStockAlerts = async (allProducts) => {
+    try {
+      // 1. Find critical products
+      const outOfStock = allProducts.filter(p => parseInt(p.stock || 0) === 0);
+      const lowStock = allProducts.filter(p => parseInt(p.stock || 0) > 0 && parseInt(p.stock || 0) <= 5);
+
+      if (outOfStock.length === 0 && lowStock.length === 0) return;
+
+      // 2. Get existing unread stock notifications to avoid duplicates
+      const existingNotifs = await getNotifications(50);
+      const unreadStockNotifs = existingNotifs.filter(n => n.type === 'stock' && n.status === 'unread');
+
+      // 3. Create missing notifications
+      for (const p of outOfStock) {
+        const hasNotif = unreadStockNotifs.some(n => n.message.includes(p.name) && n.title.includes('Out of Stock'));
+        if (!hasNotif) {
+          await createNotification('stock', 'Out of Stock Alert', `Product "${p.name}" is currently out of stock.`);
+        }
+      }
+
+      for (const p of lowStock) {
+        const hasNotif = unreadStockNotifs.some(n => n.message.includes(p.name) && n.title.includes('Low Stock'));
+        if (!hasNotif) {
+          await createNotification('stock', 'Low Stock Warning', `Product "${p.name}" has only ${p.stock} units left.`);
+        }
+      }
+    } catch (err) {
+      console.error("Stock check failed:", err);
+    }
+  };
 
   const handleViewDetails = (product) => {
     setSelectedProduct(product);
@@ -103,8 +141,45 @@ const Products = () => {
       setShowDeleteModal(false);
       toast(`"${selectedProduct.name}" deleted successfully.`);
       setSelectedProduct(null);
+      // Remove from selection if it was there
+      const newSelected = new Set(selectedIds);
+      newSelected.delete(selectedProduct.id);
+      setSelectedIds(newSelected);
     } catch {
       toast('Failed to delete product.', 'error');
+    }
+  };
+
+  // --- Bulk Actions ---
+  const toggleSelectAll = () => {
+    if (selectedIds.size === paginatedProducts.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginatedProducts.map(p => p.id)));
+    }
+  };
+
+  const toggleSelectRow = (id) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleBulkDelete = async () => {
+    const count = selectedIds.size;
+    if (!window.confirm(`Are you sure you want to delete ${count} products? This cannot be undone.`)) return;
+    
+    try {
+      const idsToDelete = Array.from(selectedIds);
+      await Promise.all(idsToDelete.map(id => deleteProduct(id)));
+      setSelectedIds(new Set());
+      toast(`Successfully deleted ${count} products.`, 'success');
+    } catch {
+      toast('Failed to delete some products.', 'error');
     }
   };
 
@@ -235,7 +310,14 @@ const Products = () => {
           <table className="table-w">
             <thead>
               <tr>
-                <th style={{ width: '40px' }}>#</th>
+                <th style={{ width: '40px' }}>
+                  <input 
+                    type="checkbox" 
+                    className="table-checkbox"
+                    checked={paginatedProducts.length > 0 && selectedIds.size === paginatedProducts.length}
+                    onChange={toggleSelectAll}
+                  />
+                </th>
                 <th>Product</th>
                 <th>SKU</th>
                 <th>Category</th>
@@ -246,9 +328,16 @@ const Products = () => {
               </tr>
             </thead>
             <tbody>
-              {!loading && paginatedProducts.map((product, idx) => (
-                <tr key={product.id}>
-                  <td className="text-muted text-xs">{(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}</td>
+              {!loading && paginatedProducts.map((product) => (
+                <tr key={product.id} className={selectedIds.has(product.id) ? 'row-selected' : ''}>
+                  <td>
+                    <input 
+                      type="checkbox" 
+                      className="table-checkbox"
+                      checked={selectedIds.has(product.id)}
+                      onChange={() => toggleSelectRow(product.id)}
+                    />
+                  </td>
                   <td>
                     <div className="flex items-center gap-3">
                       <div className="product-image-placeholder" style={{ 
@@ -308,14 +397,14 @@ const Products = () => {
               ))}
               {!loading && filteredProducts.length === 0 && (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '64px', color: 'var(--muted-foreground)' }}>
-                    <div className="flex flex-col items-center gap-2">
-                       <Package size={32} opacity={0.2} />
-                       <div style={{ fontSize: '16px', fontWeight: 500, color: 'var(--foreground)' }}>
-                         No {statusFilter === 'All' ? '' : statusFilter.toLowerCase()} products found
-                       </div>
-                       <p className="text-sm">Try adjusting your search or filters.</p>
-                    </div>
+                  <td colSpan="8" style={{ padding: 0 }}>
+                    <EmptyState 
+                      icon={Package} 
+                      title={`No ${statusFilter === 'All' ? '' : statusFilter.toLowerCase()} products found`}
+                      message="Try adjusting your search or filters to find what you're looking for."
+                      action={searchTerm || statusFilter !== 'All' ? () => { setSearchTerm(''); setStatusFilter('All'); } : handleAddClick}
+                      actionLabel={searchTerm || statusFilter !== 'All' ? "Clear filters" : "Add Product"}
+                    />
                   </td>
                 </tr>
               )}
@@ -367,6 +456,15 @@ const Products = () => {
         onConfirm={confirmDelete}
         title="Delete Product?"
         message={`Are you sure you want to delete "${selectedProduct?.name}"? This action cannot be undone.`}
+      />
+
+      <BulkActionBar 
+        selectedCount={selectedIds.size}
+        onClear={() => setSelectedIds(new Set())}
+        actions={[
+          { label: 'Archive', icon: Archive, onClick: () => toast('Bulk archive coming soon.', 'info') },
+          { label: 'Delete', icon: Trash2, variant: 'danger', onClick: handleBulkDelete }
+        ]}
       />
     </div>
   );

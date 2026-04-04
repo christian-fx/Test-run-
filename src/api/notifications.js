@@ -59,6 +59,36 @@ export const markAllAsRead = async () => {
   };
 
 /**
+ * Create a new notification
+ */
+export const createNotification = async (type, title, message) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from('notifications')
+      .insert([
+        {
+          type,
+          title,
+          message,
+          status: 'unread',
+          user_id: user.id
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error creating notification:", error);
+    return null;
+  }
+};
+
+/**
  * Real-time listener for notifications
  */
 import { subscribeToCollection } from './db';
