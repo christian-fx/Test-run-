@@ -25,3 +25,8 @@ dist-ssr
 .firebase/*
 .env
 .env.local
+
+# Tool specific
+.agents/
+.claude/
+skills-lock.json
