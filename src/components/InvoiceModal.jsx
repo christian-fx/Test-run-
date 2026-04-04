@@ -2,7 +2,11 @@ import React from 'react';
 import { X, Printer, Download, CreditCard } from 'lucide-react';
 import './InvoiceModal.css';
 
+// Context
+import { useCurrency } from '../hooks/useCurrency';
+
 const InvoiceModal = ({ isOpen, onClose, order }) => {
+  const { formatPrice } = useCurrency();
   if (!isOpen || !order) return null;
 
   const handlePrint = () => {
@@ -10,7 +14,12 @@ const InvoiceModal = ({ isOpen, onClose, order }) => {
   };
 
   const calculateSubtotal = () => {
-    return order.items?.reduce((sum, item) => sum + (parseFloat(item.price?.replace(/[^0-9.-]+/g, "") || 0) * (item.quantity || 1)), 0) || 0;
+    return order.items?.reduce((sum, item) => {
+      const price = typeof item.price === 'string' 
+        ? parseFloat(item.price.replace(/[^0-9.-]+/g, "") || 0)
+        : Number(item.price || 0);
+      return sum + (price * (item.quantity || 1));
+    }, 0) || 0;
   };
 
   const getInvoiceDate = () => {
@@ -47,13 +56,13 @@ const InvoiceModal = ({ isOpen, onClose, order }) => {
           <div className="invoice-header">
             <div className="invoice-brand">
               <div className="brand-logo">
-                <div className="logo-symbol">AG</div>
-                <span className="logo-text">ANTIGRAVITY STORE</span>
+                <div className="logo-symbol">GG</div>
+                <span className="logo-text">GO GADGET STORE</span>
               </div>
               <div className="brand-address">
-                123 E-Commerce Way, Digital District<br />
+                123 Tech Avenue, Silicon District<br />
                 Lagos, Nigeria<br />
-                support@antigravity.shop
+                support@gogadget.shop
               </div>
             </div>
             <div className="invoice-meta">
@@ -107,21 +116,26 @@ const InvoiceModal = ({ isOpen, onClose, order }) => {
               </tr>
             </thead>
             <tbody>
-              {order.items?.map((item, idx) => (
-                <tr key={idx}>
-                  <td>
-                    <div className="item-info">
-                      <span className="item-name">{item.name}</span>
-                      <span className="item-variant">{item.variant || 'Default'}</span>
-                    </div>
-                  </td>
-                  <td className="text-right">{item.quantity}</td>
-                  <td className="text-right">{item.price}</td>
-                  <td className="text-right">
-                    ₦{(parseFloat(item.price?.replace(/[^0-9.-]+/g, "") || 0) * (item.quantity || 1)).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
+              {order.items?.map((item, idx) => {
+                const itemPrice = typeof item.price === 'string' 
+                  ? parseFloat(item.price.replace(/[^0-9.-]+/g, "") || 0)
+                  : Number(item.price || 0);
+                return (
+                  <tr key={idx}>
+                    <td>
+                      <div className="item-info">
+                        <span className="item-name">{item.name}</span>
+                        <span className="item-variant">{item.variant || 'Default'}</span>
+                      </div>
+                    </td>
+                    <td className="text-right">{item.quantity}</td>
+                    <td className="text-right">{formatPrice(itemPrice)}</td>
+                    <td className="text-right">
+                      {formatPrice(itemPrice * (item.quantity || 1))}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
 
@@ -149,26 +163,26 @@ const InvoiceModal = ({ isOpen, onClose, order }) => {
             <div className="invoice-summary">
               <div className="summary-row">
                 <span>Subtotal</span>
-                <span>₦{calculateSubtotal().toLocaleString()}</span>
+                <span>{formatPrice(calculateSubtotal())}</span>
               </div>
               <div className="summary-row">
                 <span>Shipping</span>
-                <span>₦0.00</span>
+                <span>{formatPrice(0)}</span>
               </div>
               <div className="summary-row">
                 <span>Discount</span>
-                <span>₦0.00</span>
+                <span>{formatPrice(0)}</span>
               </div>
               <div className="summary-divider" />
               <div className="summary-row total">
                 <span>Total Amount</span>
-                <span>{order.total || `₦${calculateSubtotal().toLocaleString()}`}</span>
+                <span>{formatPrice(order.total_amount || calculateSubtotal())}</span>
               </div>
             </div>
           </div>
 
           <div className="invoice-footer">
-            <p>ANTIGRAVITY STORE • www.antigravity.shop</p>
+            <p>GO GADGET STORE • www.gogadget.shop</p>
           </div>
         </div>
       </div>

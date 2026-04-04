@@ -30,9 +30,13 @@ import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import ActionMenu from '../../components/ActionMenu';
 import InvoiceModal from '../../components/InvoiceModal';
 
+// Context
+import { useCurrency } from '../../hooks/useCurrency';
+
 const ITEMS_PER_PAGE = 10;
 
 const Orders = () => {
+  const { formatPrice } = useCurrency();
   const toast = useToast();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -311,7 +315,7 @@ const Orders = () => {
                       {order.status}
                     </span>
                   </td>
-                  <td className="font-medium">₦{Number(order.total_amount || 0).toLocaleString()}</td>
+                  <td className="font-medium">{formatPrice(order.total_amount)}</td>
                   <td style={{ textAlign: 'right' }}>
                     <ActionMenu 
                       options={[

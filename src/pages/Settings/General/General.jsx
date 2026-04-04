@@ -4,11 +4,15 @@ import { ChevronDown, Save, Edit2, Globe, Store } from 'lucide-react';
 // API
 import { getSettings, updateSettings } from '../../../api/settings';
 
+// Context
+import { useCurrency } from '../../../hooks/useCurrency';
+
 // Components
 import ConfirmModal from '../../../components/ConfirmModal';
 import { SkeletonFormCard } from '../../../components/Skeleton';
 
 const General = () => {
+  const { setCurrency } = useCurrency();
   // --- States ---
   const [loading, setLoading] = useState(true);
   
@@ -119,14 +123,15 @@ const General = () => {
       onConfirm: async () => {
         setIsSaving(true);
         try {
-          await updateSettings('store_settings', {
-            currency: draftRegional.currency,
-            timezone: draftRegional.timezone,
-            unit_system: draftRegional.unitSystem,
-            default_language: draftRegional.language
-          });
-          setRegionalData({ ...draftRegional });
-          setIsEditingRegional(false);
+            await updateSettings('store_settings', {
+              currency: draftRegional.currency,
+              timezone: draftRegional.timezone,
+              unit_system: draftRegional.unitSystem,
+              default_language: draftRegional.language
+            });
+            setRegionalData({ ...draftRegional });
+            setCurrency(draftRegional.currency); // Sync Global Context
+            setIsEditingRegional(false);
           setModal(prev => ({ ...prev, isOpen: false }));
         } catch (error) {
           console.error("Failed to save regional settings:", error);

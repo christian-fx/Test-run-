@@ -31,9 +31,13 @@ import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import ActionMenu from '../../components/ActionMenu';
 import BulkActionBar from '../../components/BulkActionBar';
 
+// Context
+import { useCurrency } from '../../hooks/useCurrency';
+
 const ITEMS_PER_PAGE = 10;
 
 const Products = () => {
+  const { formatPrice } = useCurrency();
   const toast = useToast();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -367,7 +371,7 @@ const Products = () => {
                   </td>
                   <td className="text-muted">{product.sku || 'N/A'}</td>
                   <td>{product.category || 'Uncategorized'}</td>
-                  <td className="font-medium">₦{Number(product.price || 0).toLocaleString()}</td>
+                  <td className="font-medium">{formatPrice(product.price)}</td>
                   <td>
                     <div className="flex items-center gap-2">
                        <div style={{ 

@@ -10,18 +10,15 @@ import {
 } from 'recharts';
 import './RevenueChart.css';
 
-const formatNaira = (value) => {
-  if (value >= 1_000_000) return `₦${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `₦${(value / 1_000).toFixed(0)}K`;
-  return `₦${value}`;
-};
+// Context
+import { useCurrency } from '../hooks/useCurrency';
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label, formatPrice }) => {
   if (active && payload && payload.length) {
     return (
       <div className="chart-tooltip">
         <div className="tooltip-label">{label}</div>
-        <div className="tooltip-value">₦{Number(payload[0].value).toLocaleString()}</div>
+        <div className="tooltip-value">{formatPrice(payload[0].value)}</div>
         <div className="tooltip-sub">{payload[0].payload.orders} orders</div>
       </div>
     );
@@ -30,6 +27,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 const RevenueChart = ({ orders = [], activeRange = 30, setActiveRange }) => {
+  const { formatPrice, formatCompactPrice } = useCurrency();
   // Build daily buckets for the selected range
   const chartData = React.useMemo(() => {
     const today = new Date();
@@ -79,7 +77,7 @@ const RevenueChart = ({ orders = [], activeRange = 30, setActiveRange }) => {
         <div className="chart-header-left">
           <div className="chart-title">Revenue Overview</div>
           <div className="chart-summary">
-            <span className="chart-total">₦{totalRevenue.toLocaleString()}</span>
+            <span className="chart-total">{formatPrice(totalRevenue)}</span>
             <span className="chart-orders-pill">{totalOrders} orders</span>
           </div>
         </div>
@@ -114,13 +112,13 @@ const RevenueChart = ({ orders = [], activeRange = 30, setActiveRange }) => {
               interval={tickInterval}
             />
             <YAxis
-              tickFormatter={formatNaira}
+              tickFormatter={formatCompactPrice}
               tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
               axisLine={false}
               tickLine={false}
               width={50}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip formatPrice={formatPrice} />} />
             <Area
               type="monotone"
               dataKey="revenue"

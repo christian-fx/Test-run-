@@ -8,7 +8,11 @@ import {
 } from 'lucide-react';
 import './ProductDetailsModal.css';
 
+// Context
+import { useCurrency } from '../hooks/useCurrency';
+
 const ProductDetailsModal = ({ isOpen, onClose, product, onEdit, onArchive }) => {
+  const { formatPrice } = useCurrency();
   if (!isOpen || !product) return null;
 
   return (
@@ -65,12 +69,12 @@ const ProductDetailsModal = ({ isOpen, onClose, product, onEdit, onArchive }) =>
               <div className="details-grid">
                 <div className="detail-group">
                   <div className="detail-label">Base Price</div>
-                  <div className="detail-value" style={{ fontSize: '16px' }}>{product.price}</div>
+                  <div className="detail-value" style={{ fontSize: '16px' }}>{formatPrice(product.price)}</div>
                 </div>
                 <div className="detail-group">
                   <div className="detail-label">Discount Price</div>
                   <div className="detail-value" style={{ color: 'var(--success)', fontSize: '16px' }}>
-                    {product.discountPrice || 'None'}
+                    {product.discountPrice ? formatPrice(product.discountPrice) : 'None'}
                   </div>
                 </div>
                 <div className="detail-group">
@@ -173,7 +177,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product, onEdit, onArchive }) =>
                         <tr key={i}>
                           <td>{v.option1 || v.color || v.size || 'N/A'}</td>
                           <td>{v.option2 || v.storage || v.material || 'N/A'}</td>
-                          <td>{v.price}</td>
+                          <td>{formatPrice(v.price)}</td>
                           <td>{v.stock}</td>
                           <td>{v.sku || 'N/A'}</td>
                         </tr>

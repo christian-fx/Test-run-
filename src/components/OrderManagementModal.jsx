@@ -14,11 +14,15 @@ import {
 import './OrderManagementModal.css';
 import InvoiceModal from './InvoiceModal';
 
+// Context
+import { useCurrency } from '../hooks/useCurrency';
+
 // API
 import { updateOrder } from '../api/orders';
 import { initializeTransaction, verifyTransaction } from '../api/paystack';
 
 const OrderManagementModal = ({ isOpen, onClose, order }) => {
+  const { formatPrice } = useCurrency();
   const [loading, setLoading] = useState(false);
   const [orderStatus, setOrderStatus] = useState('');
   const [paymentStatus, setPaymentStatus] = useState('');
@@ -56,7 +60,7 @@ const OrderManagementModal = ({ isOpen, onClose, order }) => {
   const handleInitializePaystack = async () => {
     setIsPaystackProcessing(true);
     try {
-      const amount = parseFloat(order.total?.replace(/[^0-9.-]+/g, "") || 0);
+      const amount = Number(order.total_amount || 0);
       const data = await initializeTransaction(order.customer?.email || 'guest@example.com', amount, {
         orderId: order.id
       });
@@ -158,14 +162,14 @@ const OrderManagementModal = ({ isOpen, onClose, order }) => {
                       <div className="item-name">{item.name}</div>
                       <div className="item-meta">Qty: {item.quantity} • {item.variant || 'Default'}</div>
                     </div>
-                    <div className="item-price">{item.price}</div>
+                    <div className="item-price">{formatPrice(item.price)}</div>
                   </div>
                 ))}
               </div>
               <div className="order-totals">
-                <div className="total-row"><span>Subtotal</span><span>{order.subtotal || order.total}</span></div>
-                <div className="total-row"><span>Shipping</span><span>$0.00</span></div>
-                <div className="total-row total-final"><span>Total</span><span>{order.total}</span></div>
+                <div className="total-row"><span>Subtotal</span><span>{formatPrice(order.total_amount)}</span></div>
+                <div className="total-row"><span>Shipping</span><span>{formatPrice(0)}</span></div>
+                <div className="total-row total-final"><span>Total</span><span>{formatPrice(order.total_amount)}</span></div>
               </div>
             </div>
           </div>

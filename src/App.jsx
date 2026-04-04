@@ -9,8 +9,9 @@ import Settings from './pages/Settings/Settings';
 import Categories from './pages/Categories/Categories';
 import Login from './pages/Login/Login';
 
-// Auth
+// Context
 import { AuthProvider } from './context/AuthContext';
+import { CurrencyProvider } from './context/CurrencyProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastProvider } from './components/Toast';
 
@@ -19,35 +20,37 @@ import { ToastProvider } from './components/Toast';
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <ToastProvider>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
+      <CurrencyProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/login" element={<Login />} />
 
-            {/* Protected Admin Routes */}
-            <Route 
-              path="/*" 
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/orders" element={<Orders />} />
-                      <Route path="/products" element={<Products />} />
-                       <Route path="/categories" element={<Categories />} />
-                       <Route path="/customers" element={<Customers />} />
-                       <Route path="/settings" element={<Navigate to="/settings/general" replace />} />
-                       <Route path="/settings/*" element={<Settings />} />
-                       <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
-                  </Layout>
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
-        </ToastProvider>
-      </AuthProvider>
+              {/* Protected Admin Routes */}
+              <Route 
+                path="/*" 
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/orders" element={<Orders />} />
+                        <Route path="/products" element={<Products />} />
+                        <Route path="/categories" element={<Categories />} />
+                        <Route path="/customers" element={<Customers />} />
+                        <Route path="/settings" element={<Navigate to="/settings/general" replace />} />
+                        <Route path="/settings/*" element={<Settings />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                      </Routes>
+                    </Layout>
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </CurrencyProvider>
     </Router>
   );
 }

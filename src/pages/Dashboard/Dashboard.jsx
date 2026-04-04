@@ -21,7 +21,11 @@ import { subscribeToOrders } from '../../api/orders';
 import { subscribeToCustomers } from '../../api/customers';
 import { getRangeStart, getPrevRangeStart, isWithinRange } from '../../utils/dateUtils';
 
+// Context
+import { useCurrency } from '../../hooks/useCurrency';
+
 const Dashboard = () => {
+  const { formatPrice } = useCurrency();
   const [activeRange, setActiveRange] = useState(30); // Default to 30 days
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -93,7 +97,7 @@ const Dashboard = () => {
   const stats = [
     {
       title: 'Current Revenue',
-      value: `₦${currentRevenue.toLocaleString()}`,
+      value: formatPrice(currentRevenue),
       change: revenueChangeText,
       trend: revenueTrend,
       icon: DollarSign,
@@ -225,7 +229,7 @@ const Dashboard = () => {
                     <div className="order-row-meta">{timeStr}</div>
                   </div>
                   <div className="order-row-right">
-                    <div className="order-row-amount">₦{Number(order.total_amount || 0).toLocaleString()}</div>
+                    <div className="order-row-amount">{formatPrice(order.total_amount)}</div>
                     <span className={`badge badge-${statusClass}`}>{order.status || 'Pending'}</span>
                   </div>
                 </div>

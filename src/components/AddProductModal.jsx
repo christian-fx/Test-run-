@@ -549,6 +549,28 @@ const AddProductModal = ({ isOpen, onClose, mode = 'add', product = null }) => {
               </div>
             </div>
           </div>
+
+          <div className="section">
+            <div className="section-header">
+              <div>
+                <div className="section-title">Internal Notes</div>
+                <div className="section-subtitle">Private annotations for staff only.</div>
+              </div>
+            </div>
+            <div className="section-panel">
+              <div className="form-group">
+                <div className="form-input textarea">
+                  <textarea 
+                    name="notes" 
+                    placeholder="e.g., Supplier contact info, restock schedule, etc..." 
+                    value={formData.notes || ''} 
+                    onChange={handleInputChange} 
+                    style={{ minHeight: '100px' }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="modal-footer">
