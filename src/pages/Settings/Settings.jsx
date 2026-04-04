@@ -38,7 +38,7 @@ const Settings = () => {
           {navItems.map((item) => (
             <NavLink 
               key={item.id} 
-              to={item.id.toLowerCase() === 'team' ? 'team' : item.id.toLowerCase()}
+              to={`/settings/${item.id.toLowerCase() === 'team' ? 'team' : item.id.toLowerCase()}`}
               className={({ isActive }) => `settings-nav-item ${isActive ? 'active' : ''}`}
             >
               {item.label}

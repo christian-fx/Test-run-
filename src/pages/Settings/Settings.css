@@ -69,6 +69,45 @@
   border-bottom: 1px solid var(--border);
 }
 
+@media (max-width: 640px) {
+  .form-card-header {
+    padding: 16px;
+  }
+
+  /* When in edit mode the header wraps: title row on top, buttons below */
+  .form-card-header .flex.items-center.justify-between.w-full {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Edit buttons stack vertically with natural (content) width */
+  .form-card-header .flex.gap-2 {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  /* Slightly smaller buttons on mobile */
+  .form-card-header .btn {
+    font-size: 13px;
+    padding: 6px 12px;
+    min-height: 36px;
+  }
+
+  .form-card-title {
+    font-size: 14px;
+  }
+
+  .form-card-desc {
+    font-size: 12px;
+  }
+
+  .form-card-body {
+    padding: 16px;
+  }
+}
+
 .form-card-title {
   font-size: 16px;
   font-weight: 600;
