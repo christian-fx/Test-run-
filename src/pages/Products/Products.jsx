@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import './Products.css';
 import { useToast } from '../../components/useToast';
+import { SkeletonStat, SkeletonRow } from '../../components/Skeleton';
 
 // API
 import { subscribeToProducts, deleteProduct } from '../../api/products';
@@ -150,52 +151,50 @@ const Products = () => {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-title">Total Products</div>
-            <div className="stat-icon"><Package size={18} /></div>
-          </div>
-          <div className="stat-value">{loading ? '...' : products.length}</div>
-          <div className="text-sm text-muted" style={{ marginTop: '8px' }}>
-            Across all categories
-          </div>
+      {loading ? (
+        <div className="stats-grid">
+          <SkeletonStat /><SkeletonStat /><SkeletonStat /><SkeletonStat />
         </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-title">Active Products</div>
-            <div className="stat-icon"><Eye size={18} /></div>
-          </div>
-          <div className="stat-value">{loading ? '...' : products.filter(p => p.status === 'Active' || p.status === 'Published').length}</div>
-          <div className="text-sm text-muted" style={{ marginTop: '8px' }}>
-            Ready for sale
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-title">Out of Stock</div>
-            <div className="stat-icon" style={{ background: 'color-mix(in srgb, var(--destructive) 15%, transparent)', color: 'var(--destructive)' }}>
-              <AlertCircle size={18} />
+      ) : (
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-title">Total Products</div>
+              <div className="stat-icon"><Package size={18} /></div>
             </div>
+            <div className="stat-value">{products.length}</div>
+            <div className="text-sm text-muted" style={{ marginTop: '8px' }}>Across all categories</div>
           </div>
-          <div className="stat-value">{loading ? '...' : products.filter(p => parseInt(p.stock) === 0).length}</div>
-          <div className="text-sm text-muted" style={{ marginTop: '8px' }}>
-            Immediate restock needed
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-title">Low Stock</div>
-            <div className="stat-icon" style={{ background: 'color-mix(in srgb, var(--warning) 15%, transparent)', color: 'var(--warning)' }}>
-              <AlertCircle size={18} />
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-title">Active Products</div>
+              <div className="stat-icon"><Eye size={18} /></div>
             </div>
+            <div className="stat-value">{products.filter(p => p.status === 'Active' || p.status === 'Published').length}</div>
+            <div className="text-sm text-muted" style={{ marginTop: '8px' }}>Ready for sale</div>
           </div>
-          <div className="stat-value">{loading ? '...' : products.filter(p => parseInt(p.stock) > 0 && parseInt(p.stock) < 10).length}</div>
-          <div className="text-sm text-muted" style={{ marginTop: '8px' }}>
-            Requires attention
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-title">Out of Stock</div>
+              <div className="stat-icon" style={{ background: 'color-mix(in srgb, var(--destructive) 15%, transparent)', color: 'var(--destructive)' }}>
+                <AlertCircle size={18} />
+              </div>
+            </div>
+            <div className="stat-value">{products.filter(p => parseInt(p.stock) === 0).length}</div>
+            <div className="text-sm text-muted" style={{ marginTop: '8px' }}>Immediate restock needed</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-title">Low Stock</div>
+              <div className="stat-icon" style={{ background: 'color-mix(in srgb, var(--warning) 15%, transparent)', color: 'var(--warning)' }}>
+                <AlertCircle size={18} />
+              </div>
+            </div>
+            <div className="stat-value">{products.filter(p => parseInt(p.stock) > 0 && parseInt(p.stock) < 10).length}</div>
+            <div className="text-sm text-muted" style={{ marginTop: '8px' }}>Requires attention</div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="filters-bar">
         <div className="filters-left">
@@ -320,13 +319,9 @@ const Products = () => {
                   </td>
                 </tr>
               )}
-              {loading && (
-                <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '48px' }}>
-                    Loading products...
-                  </td>
-                </tr>
-              )}
+              {loading && Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonRow key={i} cols={8} />
+              ))}
             </tbody>
           </table>
         </div>

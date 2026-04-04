@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import './Customers.css';
 import { useToast } from '../../components/useToast';
+import { SkeletonStat, SkeletonRow } from '../../components/Skeleton';
 
 // API
 import { subscribeToCustomers, deleteCustomer, updateCustomer } from '../../api/customers';
@@ -115,38 +116,38 @@ const Customers = () => {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-title">Total Customers</div>
-            <div className="stat-icon"><Users size={18} /></div>
+      {loading ? (
+        <div className="stats-grid">
+          <SkeletonStat /><SkeletonStat /><SkeletonStat />
+        </div>
+      ) : (
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-title">Total Customers</div>
+              <div className="stat-icon"><Users size={18} /></div>
+            </div>
+            <div className="stat-value">{customers.length}</div>
+            <div className="text-sm text-muted" style={{ marginTop: '8px' }}>All platforms combined</div>
           </div>
-          <div className="stat-value">{loading ? '...' : customers.length}</div>
-          <div className="text-sm text-muted" style={{ marginTop: '8px' }}>
-            All platforms combined
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-title">Active Now</div>
+              <div className="stat-icon"><UserCheck size={18} /></div>
+            </div>
+            <div className="stat-value">0</div>
+            <div className="text-sm text-muted" style={{ marginTop: '8px' }}>Real-time tracking</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-title">New Signups</div>
+              <div className="stat-icon"><UserPlus size={18} /></div>
+            </div>
+            <div className="stat-value">{customers.length}</div>
+            <div className="text-sm text-muted" style={{ marginTop: '8px' }}>Lifetime members</div>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-title">Active Now</div>
-            <div className="stat-icon"><UserCheck size={18} /></div>
-          </div>
-          <div className="stat-value">{loading ? '...' : 0}</div>
-          <div className="text-sm text-muted" style={{ marginTop: '8px' }}>
-            Real-time tracking
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-title">New Signups</div>
-            <div className="stat-icon"><UserPlus size={18} /></div>
-          </div>
-          <div className="stat-value">{loading ? '...' : customers.length}</div>
-          <div className="text-sm text-muted" style={{ marginTop: '8px' }}>
-            Lifetime members
-          </div>
-        </div>
-      </div>
+      )}
 
       <div className="filters-bar">
         <div className="filters-left">
@@ -244,13 +245,9 @@ const Customers = () => {
                   </td>
                 </tr>
               )}
-              {loading && (
-                <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '48px' }}>
-                    Loading customers...
-                  </td>
-                </tr>
-              )}
+              {loading && Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonRow key={i} cols={7} />
+              ))}
             </tbody>
           </table>
         </div>

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import './Orders.css';
 import { useToast } from '../../components/useToast';
+import { SkeletonRow } from '../../components/Skeleton';
 
 // API
 import { subscribeToOrders, deleteOrder, updateOrder } from '../../api/orders';
@@ -262,13 +263,9 @@ const Orders = () => {
                   </td>
                 </tr>
               )}
-              {loading && (
-                <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '48px' }}>
-                    Loading orders...
-                  </td>
-                </tr>
-              )}
+              {loading && Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonRow key={i} cols={7} />
+              ))}
             </tbody>
           </table>
         </div>

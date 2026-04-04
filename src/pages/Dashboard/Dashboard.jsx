@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import './Dashboard.css';
 import RevenueChart from '../../components/RevenueChart';
+import { SkeletonStat, SkeletonRow } from '../../components/Skeleton';
 
 // API
 import { subscribeToProducts } from '../../api/products';
@@ -139,22 +140,28 @@ const Dashboard = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="stats-grid">
-        {stats.map((stat, index) => (
-          <div key={index} className="stat-card">
-            <div className="stat-header">
-              <span className="stat-title">{stat.title}</span>
-              <div className="stat-icon"><stat.icon size={18} /></div>
+      {loading ? (
+        <div className="stats-grid">
+          <SkeletonStat /><SkeletonStat /><SkeletonStat /><SkeletonStat />
+        </div>
+      ) : (
+        <div className="stats-grid">
+          {stats.map((stat, index) => (
+            <div key={index} className="stat-card">
+              <div className="stat-header">
+                <span className="stat-title">{stat.title}</span>
+                <div className="stat-icon"><stat.icon size={18} /></div>
+              </div>
+              <div className="stat-value">{stat.value}</div>
+              <div className={`stat-change ${stat.trend}`}>
+                {stat.trend === 'up' && <TrendingUp size={13} />}
+                {stat.trend === 'down' && <TrendingDown size={13} />}
+                <span>{stat.change}</span>
+              </div>
             </div>
-            <div className="stat-value">{loading ? <span className="stat-loading">—</span> : stat.value}</div>
-            <div className={`stat-change ${stat.trend}`}>
-              {stat.trend === 'up' && <TrendingUp size={13} />}
-              {stat.trend === 'down' && <TrendingDown size={13} />}
-              <span>{stat.change}</span>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Revenue Chart */}
       {!loading && <RevenueChart orders={orders} />}
@@ -172,9 +179,11 @@ const Dashboard = () => {
           </div>
           <div className="panel-body" style={{ padding: 0 }}>
             {loading && (
-              <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted-foreground)' }}>
-                Loading...
-              </div>
+              <table className="table-w" style={{ width: '100%' }}>
+                <tbody>
+                  {Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} cols={4} />)}
+                </tbody>
+              </table>
             )}
             {!loading && recentOrders.length === 0 && (
               <div className="empty-panel">

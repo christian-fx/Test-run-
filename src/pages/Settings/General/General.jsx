@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Save, Edit2, Globe, Store, Loader2 } from 'lucide-react';
+import { ChevronDown, Save, Edit2, Globe, Store } from 'lucide-react';
 
 // API
 import { getSettings, updateSettings } from '../../../api/settings';
 
 // Components
 import ConfirmModal from '../../../components/ConfirmModal';
+import { SkeletonFormCard } from '../../../components/Skeleton';
 
 const General = () => {
   // --- States ---
@@ -138,11 +139,9 @@ const General = () => {
 
   if (loading) {
     return (
-      <div className="settings-content flex items-center justify-center" style={{ minHeight: '400px' }}>
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin text-primary" size={40} />
-          <p className="text-muted text-sm font-medium">Fetching store configuration...</p>
-        </div>
+      <div className="settings-content">
+        <SkeletonFormCard />
+        <SkeletonFormCard />
       </div>
     );
   }
