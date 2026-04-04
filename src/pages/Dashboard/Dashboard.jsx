@@ -140,7 +140,7 @@ const Dashboard = () => {
     <div className="dashboard">
       <div className="dashboard-header">
         <div>
-          <h1 className="font-bold" style={{ fontSize: '24px' }}>Analytics & Overview</h1>
+          <h1 className="font-bold">Analytics & Overview</h1>
           <p className="text-muted">Dynamic summary of your business performance.</p>
         </div>
         

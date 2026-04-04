@@ -21,7 +21,13 @@ import {
   CreditCard,
   Link as LinkIcon,
   Sun,
-  Moon
+  Moon,
+  Package,
+  Star,
+  Banknote,
+  Ticket,
+  Image as ImageIcon,
+  Truck
 } from 'lucide-react';
 import './Layout.css';
 import { useTheme } from '../../hooks/useTheme';
@@ -47,13 +53,44 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const navGroups = [
     {
-      title: 'Main Menu',
+      title: 'Navigation',
       items: [
         { label: 'Dashboard', path: '/', icon: LayoutDashboard },
+      ]
+    },
+    {
+      title: 'Management',
+      items: [
         { label: 'Orders', path: '/orders', icon: ShoppingCart },
         { label: 'Products', path: '/products', icon: Smartphone },
         { label: 'Categories', path: '/categories', icon: FolderTree },
+        { label: 'Inventory', path: '/inventory', icon: Package },
+      ]
+    },
+    {
+      title: 'Customers',
+      items: [
         { label: 'Customers', path: '/customers', icon: Users },
+        { label: 'Reviews', path: '/customers/reviews', icon: Star },
+      ]
+    },
+    {
+      title: 'Finance',
+      items: [
+        { label: 'Transactions', path: '/finance/transactions', icon: Banknote },
+      ]
+    },
+    {
+      title: 'Marketing',
+      items: [
+        { label: 'Discounts', path: '/marketing/discounts', icon: Ticket },
+        { label: 'Promotions', path: '/marketing/promotions', icon: ImageIcon },
+      ]
+    },
+    {
+      title: 'Logistics',
+      items: [
+        { label: 'Shipping', path: '/logistics/shipping', icon: Truck },
       ]
     },
     {

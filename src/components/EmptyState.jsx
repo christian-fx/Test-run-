@@ -13,7 +13,7 @@ const EmptyState = (props) => {
   const IconComponent = props.Icon || Search;
 
   return (
-    <div className="empty-state-container">
+    <div className={`empty-state-container ${props.variant === 'table' ? 'table-variant' : ''}`}>
       <div className="empty-state-icon">
         <IconComponent size={40} strokeWidth={1.5} />
       </div>

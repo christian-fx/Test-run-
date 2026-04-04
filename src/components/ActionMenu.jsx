@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreVertical } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import './ActionMenu.css';
 
 const ActionMenu = ({ options, icon }) => {
-  const MenuIcon = icon || MoreHorizontal;
+  const MenuIcon = icon || MoreVertical;
   const [isOpen, setIsOpen] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
   const [orientation, setOrientation] = useState('down'); // 'down' or 'up'
@@ -66,10 +66,10 @@ const ActionMenu = ({ options, icon }) => {
   return (
     <div className="action-menu-container" ref={menuRef}>
       <button 
-        className={`btn btn-outline btn-icon ${isOpen ? 'active' : ''}`}
+        className={`action-trigger-btn ${isOpen ? 'active' : ''}`}
         onClick={toggleMenu}
       >
-        <MenuIcon size={16} />
+        <MenuIcon size={18} />
       </button>
 
       {isOpen && createPortal(

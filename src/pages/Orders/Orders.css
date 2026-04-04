@@ -1,26 +1,5 @@
 .orders-page { display: flex; flex-direction: column; gap: 24px; }
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-}
-
-@media (max-width: 1200px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-}
-
-@media (max-width: 640px) {
-  .stats-grid { grid-template-columns: 1fr; gap: 12px; }
-}
-.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-.stat-header { display: flex; align-items: center; justify-content: space-between; }
-.stat-title { font-size: 14px; font-weight: 500; color: var(--muted-foreground); }
-.stat-icon { width: 32px; height: 32px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; background: var(--secondary); color: var(--secondary-foreground); }
-.stat-value { font-size: 28px; font-weight: 700; color: var(--card-foreground); }
-.stat-change { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; }
-.stat-change.positive { color: var(--success); }
-.stat-change.negative { color: var(--destructive); }
-.stat-change.neutral { color: var(--muted-foreground); }
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); display: flex; flex-direction: column; }
 
 .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); display: flex; flex-direction: column; }
 

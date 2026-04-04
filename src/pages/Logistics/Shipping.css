@@ -1,0 +1,254 @@
+.shipping-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.header-content h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 4px;
+}
+
+.header-content p {
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.shipping-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .shipping-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+/* Zone Cards matching Panel */
+.zone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.zone-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+}
+
+@media (max-width: 640px) {
+  .zone-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .zone-metrics {
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    justify-content: space-between;
+  }
+}
+
+.zone-card.inactive {
+  opacity: 0.6;
+}
+
+.zone-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.zone-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--card-foreground);
+}
+
+.zone-pill {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.zone-pill.active {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
+.zone-pill.inactive {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.zone-regions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.zone-metrics {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.z-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.z-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+}
+
+.z-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--card-foreground);
+}
+
+.z-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.z-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.z-btn:hover {
+  color: var(--primary);
+  background: var(--secondary);
+}
+
+/* Carrier Cards */
+.carriers-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.carrier-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.carrier-card.disabled {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.carrier-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  border: 1px solid var(--border);
+}
+
+.carrier-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.carrier-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--card-foreground);
+  margin-bottom: 2px;
+}
+
+.carrier-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+.btn-config {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-config:hover {
+  background: var(--secondary);
+}

@@ -9,6 +9,14 @@ import Settings from './pages/Settings/Settings';
 import Categories from './pages/Categories/Categories';
 import Login from './pages/Login/Login';
 
+// New Feature Modules (Management, Finance, Marketing, Logistics)
+import Inventory from './pages/Inventory/Inventory';
+import Reviews from './pages/Customers/Reviews';
+import Transactions from './pages/Finance/Transactions';
+import Discounts from './pages/Marketing/Discounts';
+import Promotions from './pages/Marketing/Promotions';
+import Shipping from './pages/Logistics/Shipping';
+
 // Context
 import { AuthProvider } from './context/AuthContext';
 import { CurrencyProvider } from './context/CurrencyProvider';
@@ -38,7 +46,13 @@ function App() {
                         <Route path="/orders" element={<Orders />} />
                         <Route path="/products" element={<Products />} />
                         <Route path="/categories" element={<Categories />} />
+                        <Route path="/inventory" element={<Inventory />} />
                         <Route path="/customers" element={<Customers />} />
+                        <Route path="/customers/reviews" element={<Reviews />} />
+                        <Route path="/finance/transactions" element={<Transactions />} />
+                        <Route path="/marketing/discounts" element={<Discounts />} />
+                        <Route path="/marketing/promotions" element={<Promotions />} />
+                        <Route path="/logistics/shipping" element={<Shipping />} />
                         <Route path="/settings" element={<Navigate to="/settings/general" replace />} />
                         <Route path="/settings/*" element={<Settings />} />
                         <Route path="*" element={<Navigate to="/" replace />} />

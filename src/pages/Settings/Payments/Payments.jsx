@@ -15,7 +15,6 @@ const Payments = () => {
     is_test_mode: true
   });
   const [draftSettings, setDraftSettings] = useState({ ...settings });
-  const [transactions, setTransactions] = useState([]);
   
   const [isSaving, setIsSaving] = useState(false);
   const [modal, setModal] = useState({ isOpen: false, type: 'primary', onConfirm: () => {}, title: '', message: '' });
@@ -34,12 +33,7 @@ const Payments = () => {
     fetchSettingsData();
 
     // Real-time Orders
-    const unsubscribe = subscribeToOrders((orderData) => {
-      // Take latest 10 orders as transactions
-      const recentTxns = orderData
-        .sort((a, b) => new Date(b.order_date) - new Date(a.order_date))
-        .slice(0, 10);
-      setTransactions(recentTxns);
+    const unsubscribe = subscribeToOrders(() => {
       setLoading(false);
     });
 
@@ -174,60 +168,6 @@ const Payments = () => {
                  <div className="form-input static">T+1 Automated Settlements</div>
               </div>
            </div>
-        </div>
-      </div>
-
-      {/* Transaction Records */}
-      <div className="form-card">
-        <div className="form-card-header">
-           <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                 <div className="icon-badge primary">
-                    <Receipt size={20} />
-                 </div>
-                 <div className="form-card-title">Recent Transactions</div>
-              </div>
-              <button className="btn btn-subtle flex items-center gap-2">
-                 <History size={16} /> View History
-              </button>
-           </div>
-        </div>
-        <div className="form-card-body" style={{ padding: 0 }}>
-           <table className="table-w full-width">
-              <thead>
-                 <tr>
-                    <th style={{ paddingLeft: '24px' }}>Date</th>
-                    <th>Customer</th>
-                    <th>Amount</th>
-                    <th style={{ textAlign: 'right', paddingRight: '24px' }}>Status</th>
-                 </tr>
-              </thead>
-              <tbody>
-                 {transactions.length === 0 ? (
-                    <tr>
-                       <td colSpan="4" className="text-center py-12 text-muted text-sm">No transactions found.</td>
-                    </tr>
-                 ) : (
-                    transactions.map((txn) => (
-                      <tr key={txn.id}>
-                         <td style={{ paddingLeft: '24px' }} className="text-sm">
-                            {new Date(txn.order_date).toLocaleDateString()}
-                         </td>
-                         <td>
-                            <div className="text-sm font-medium">{txn.customer_name}</div>
-                            <div className="text-[10px] text-muted uppercase tracking-wider">{txn.id.slice(0,8)}</div>
-                         </td>
-                         <td className="font-bold">₦{Number(txn.total_amount).toLocaleString()}</td>
-                         <td style={{ textAlign: 'right', paddingRight: '24px' }}>
-                            <span className={`badge badge-${txn.payment_status === 'Paid' ? 'success' : 'destructive'}`}>
-                               {txn.payment_status}
-                            </span>
-                         </td>
-                      </tr>
-                    ))
-                 )}
-              </tbody>
-           </table>
         </div>
       </div>
 

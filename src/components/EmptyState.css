@@ -61,3 +61,11 @@
   background: var(--secondary);
   border-color: var(--primary);
 }
+
+/* Table Variant Fix */
+.empty-state-container.table-variant {
+  margin: 0;
+  padding: 64px 20px;
+  background: transparent;
+  border: none;
+}

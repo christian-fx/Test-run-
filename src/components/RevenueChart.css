@@ -9,22 +9,22 @@
 
 .chart-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border);
   gap: 16px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .chart-header-left {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: baseline;
+  gap: 12px;
 }
 
 .chart-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--card-foreground);
 }
