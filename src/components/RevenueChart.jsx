@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   AreaChart,
   Area,
@@ -9,12 +9,6 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import './RevenueChart.css';
-
-const RANGES = [
-  { label: '7D', days: 7 },
-  { label: '30D', days: 30 },
-  { label: '90D', days: 90 },
-];
 
 const formatNaira = (value) => {
   if (value >= 1_000_000) return `₦${(value / 1_000_000).toFixed(1)}M`;
@@ -35,9 +29,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const RevenueChart = ({ orders = [] }) => {
-  const [activeRange, setActiveRange] = useState(30);
-
+const RevenueChart = ({ orders = [], activeRange = 30, setActiveRange }) => {
   // Build daily buckets for the selected range
   const chartData = React.useMemo(() => {
     const today = new Date();
@@ -54,7 +46,9 @@ const RevenueChart = ({ orders = [] }) => {
       const raw = order.order_date || order.orderDate || order.created_at;
       if (!raw) return;
       const d = new Date(raw?.toDate ? raw.toDate() : raw);
-      const daysAgo = (today - d) / (1000 * 60 * 60 * 24);
+      const diffMs = today - d;
+      const daysAgo = diffMs / (1000 * 60 * 60 * 24);
+      
       if (daysAgo > activeRange) return;
 
       const key = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
@@ -71,7 +65,13 @@ const RevenueChart = ({ orders = [] }) => {
   const totalOrders = chartData.reduce((sum, d) => sum + d.orders, 0);
 
   // Tick interval based on range
-  const tickInterval = activeRange === 7 ? 0 : activeRange === 30 ? 4 : 13;
+  const tickInterval = activeRange === 7 ? 0 : activeRange === 30 ? 4 : 11;
+
+  const RANGES = [
+    { label: '7D', value: 7 },
+    { label: '30D', value: 30 },
+    { label: '90D', value: 90 },
+  ];
 
   return (
     <div className="revenue-chart-card">
@@ -86,9 +86,9 @@ const RevenueChart = ({ orders = [] }) => {
         <div className="chart-range-tabs">
           {RANGES.map(r => (
             <button
-              key={r.days}
-              className={`range-tab ${activeRange === r.days ? 'active' : ''}`}
-              onClick={() => setActiveRange(r.days)}
+              key={r.value}
+              className={`range-tab ${activeRange === r.value ? 'active' : ''}`}
+              onClick={() => setActiveRange && setActiveRange(r.value)}
             >
               {r.label}
             </button>

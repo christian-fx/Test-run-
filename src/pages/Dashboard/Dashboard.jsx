@@ -19,8 +19,10 @@ import EmptyState from '../../components/EmptyState';
 import { subscribeToProducts } from '../../api/products';
 import { subscribeToOrders } from '../../api/orders';
 import { subscribeToCustomers } from '../../api/customers';
+import { getRangeStart, getPrevRangeStart, isWithinRange } from '../../utils/dateUtils';
 
 const Dashboard = () => {
+  const [activeRange, setActiveRange] = useState(30); // Default to 30 days
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -41,102 +43,113 @@ const Dashboard = () => {
     };
   }, []);
 
-  // --- Real computed stats ---
+  // --- Dynamic Dashboard Intelligence ---
+  
+  const rangeStart = getRangeStart(activeRange);
+  const prevRangeStart = getPrevRangeStart(activeRange);
 
-  const now = new Date();
+  // 1. Revenue Analytics
+  const currentPeriodOrders = orders.filter(o => isWithinRange(o.order_date || o.created_at, rangeStart));
+  const prevPeriodOrders = orders.filter(o => isWithinRange(o.order_date || o.created_at, prevRangeStart, rangeStart));
 
-  // Revenue: current month vs last month
-  const thisMonthRevenue = orders
-    .filter(o => {
-      const d = new Date(o.order_date || o.orderDate || o.created_at || 0);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    })
-    .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+  const currentRevenue = currentPeriodOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+  const prevRevenue = prevPeriodOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
 
-  const lastMonthRevenue = orders
-    .filter(o => {
-      const d = new Date(o.order_date || o.orderDate || o.created_at || 0);
-      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      return d.getMonth() === lastMonth.getMonth() && d.getFullYear() === lastMonth.getFullYear();
-    })
-    .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
-
-  const revenuePct = lastMonthRevenue > 0
-    ? (((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100).toFixed(1)
+  const revenuePct = prevRevenue > 0 
+    ? (((currentRevenue - prevRevenue) / prevRevenue) * 100).toFixed(1)
     : null;
 
-  const revenueChange = revenuePct !== null
-    ? `${revenuePct > 0 ? '+' : ''}${revenuePct}% vs last month`
-    : 'No data from last month';
+  const revenueChangeText = revenuePct !== null 
+    ? `${revenuePct > 0 ? '+' : ''}${revenuePct}% vs prev. ${activeRange} days`
+    : 'No comparison data';
 
-  const revenueTrend = revenuePct === null ? 'neutral' : revenuePct >= 0 ? 'up' : 'down';
+  const revenueTrend = revenuePct === null ? 'neutral' : Number(revenuePct) >= 0 ? 'up' : 'down';
 
-  // Total revenue (all delivered/paid orders)
-  const totalRevenue = orders
-    .filter(o => o.status === 'Delivered' || o.payment_status === 'Paid')
-    .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+  // 2. Order Analytics
+  const activeOrders = currentPeriodOrders.length;
+  const prevActiveOrders = prevPeriodOrders.length;
+  const orderPct = prevActiveOrders > 0
+    ? (((activeOrders - prevActiveOrders) / prevActiveOrders) * 100).toFixed(0)
+    : null;
 
-  // Orders this week
-  const weekAgo = new Date(now); weekAgo.setDate(now.getDate() - 7);
-  const ordersThisWeek = orders.filter(o => {
-    const d = new Date(o.order_date || o.orderDate || o.created_at || 0);
-    return d >= weekAgo;
-  }).length;
+  const orderChangeText = orderPct !== null
+    ? `${orderPct > 0 ? '+' : ''}${orderPct}% growth`
+    : `${activeOrders} orders total`;
 
-  // Products
+  // 3. Product Inventory
   const activeProducts = products.filter(p => p.status === 'Active' || p.status === 'Published').length;
   const outOfStock = products.filter(p => parseInt(p.stock) === 0).length;
 
-  // Customers today
-  const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
-  const newCustomersToday = customers.filter(c => new Date(c.created_at || 0) >= todayStart).length;
+  // 4. Customer Growth
+  const newCustomersCurrent = customers.filter(c => isWithinRange(c.created_at, rangeStart)).length;
+  const customerChangeText = newCustomersCurrent > 0 
+    ? `+${newCustomersCurrent} new recently` 
+    : 'Steady growth';
 
-  // Pending orders
+  // Pending Analytics
   const pendingOrders = orders.filter(o => o.status === 'Processing' || o.status === 'Pending').length;
   const pendingPct = orders.length > 0 ? Math.round((pendingOrders / orders.length) * 100) : 0;
 
   const stats = [
     {
-      title: 'Total Revenue',
-      value: `₦${totalRevenue.toLocaleString()}`,
-      change: revenueChange,
+      title: 'Current Revenue',
+      value: `₦${currentRevenue.toLocaleString()}`,
+      change: revenueChangeText,
       trend: revenueTrend,
       icon: DollarSign,
     },
     {
-      title: 'Total Orders',
-      value: orders.length.toString(),
-      change: `+${ordersThisWeek} this week`,
-      trend: 'up',
+      title: 'Active Orders',
+      value: activeOrders.toString(),
+      change: orderChangeText,
+      trend: orderPct === null ? 'neutral' : Number(orderPct) >= 0 ? 'up' : 'down',
       icon: ShoppingBag,
     },
     {
-      title: 'Active Products',
+      title: 'Published Products',
       value: activeProducts.toString(),
-      change: `${products.length - activeProducts} drafts · ${outOfStock} out of stock`,
+      change: `${outOfStock} items out of stock`,
       trend: outOfStock > 0 ? 'down' : 'neutral',
       icon: Package,
     },
     {
       title: 'Total Customers',
       value: customers.length.toString(),
-      change: newCustomersToday > 0 ? `+${newCustomersToday} today` : 'No new customers today',
-      trend: newCustomersToday > 0 ? 'up' : 'neutral',
+      change: customerChangeText,
+      trend: newCustomersCurrent > 0 ? 'up' : 'neutral',
       icon: Users,
     },
   ];
 
-  // Recent orders (last 5, with real timestamp formatting)
-  const recentOrders = [...orders]
+  // Recent orders (Always show globally, but we could highlight if we wanted)
+  const recentOrdersSorted = [...orders]
     .sort((a, b) => new Date(b.order_date || b.created_at || 0) - new Date(a.order_date || a.created_at || 0))
     .slice(0, 6);
+
+  const ranges = [
+    { label: '7D', value: 7 },
+    { label: '30D', value: 30 },
+    { label: '90D', value: 90 },
+  ];
 
   return (
     <div className="dashboard">
       <div className="dashboard-header">
         <div>
-          <h1 className="font-bold" style={{ fontSize: '24px' }}>Dashboard Overview</h1>
-          <p className="text-muted">Real-time summary of your store's performance across all channels.</p>
+          <h1 className="font-bold" style={{ fontSize: '24px' }}>Analytics & Overview</h1>
+          <p className="text-muted">Dynamic summary of your business performance.</p>
+        </div>
+        
+        <div className="range-selector">
+          {ranges.map(r => (
+            <button
+              key={r.value}
+              className={`range-btn ${activeRange === r.value ? 'active' : ''}`}
+              onClick={() => setActiveRange(r.value)}
+            >
+              {r.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -165,7 +178,7 @@ const Dashboard = () => {
       )}
 
       {/* Revenue Chart */}
-      {!loading && <RevenueChart orders={orders} />}
+      {!loading && <RevenueChart orders={orders} activeRange={activeRange} />}
 
       {/* Bottom Grid: Recent Orders + Quick Stats */}
       <div className="dashboard-grid">
@@ -186,14 +199,14 @@ const Dashboard = () => {
                 </tbody>
               </table>
             )}
-            {!loading && recentOrders.length === 0 && (
+            {!loading && recentOrdersSorted.length === 0 && (
               <EmptyState 
                 Icon={Clock} 
                 title="No orders yet" 
                 message="Recent orders will appear here once customers start purchasing."
               />
             )}
-            {!loading && recentOrders.map((order) => {
+            {!loading && recentOrdersSorted.map((order) => {
               const raw = order.order_date || order.orderDate || order.created_at;
               const date = raw ? new Date(raw?.toDate ? raw.toDate() : raw) : null;
               const timeStr = date ? date.toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
