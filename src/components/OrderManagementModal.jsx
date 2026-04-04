@@ -8,9 +8,11 @@ import {
   Truck,
   CreditCard,
   ChevronDown,
-  Loader2
+  Loader2,
+  Printer
 } from 'lucide-react';
 import './OrderManagementModal.css';
+import InvoiceModal from './InvoiceModal';
 
 // API
 import { updateOrder } from '../api/orders';
@@ -22,6 +24,7 @@ const OrderManagementModal = ({ isOpen, onClose, order }) => {
   const [paymentStatus, setPaymentStatus] = useState('');
   const [paymentReference, setPaymentReference] = useState('');
   const [isPaystackProcessing, setIsPaystackProcessing] = useState(false);
+  const [showInvoice, setShowInvoice] = useState(false);
 
   useEffect(() => {
     if (order) {
@@ -276,9 +279,15 @@ const OrderManagementModal = ({ isOpen, onClose, order }) => {
         </div>
 
         <div className="modal-footer">
-          <div className="btn btn-outline" onClick={() => console.log('Notify')}>
-            <Mail size={16} />
-            Notify User
+          <div className="flex gap-2">
+            <button className="btn btn-outline" onClick={() => setShowInvoice(true)}>
+              <Printer size={16} />
+              Print Invoice
+            </button>
+            <button className="btn btn-outline" onClick={() => console.log('Notify')}>
+              <Mail size={16} />
+              Notify User
+            </button>
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
             <button className="btn btn-subtle" onClick={onClose} disabled={loading}>Cancel</button>
@@ -293,6 +302,12 @@ const OrderManagementModal = ({ isOpen, onClose, order }) => {
           </div>
         </div>
       </div>
+
+      <InvoiceModal 
+        isOpen={showInvoice}
+        onClose={() => setShowInvoice(false)}
+        order={order}
+      />
     </div>
   );
 };

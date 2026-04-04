@@ -28,6 +28,7 @@ import { subscribeToOrders, deleteOrder, updateOrder } from '../../api/orders';
 import OrderManagementModal from '../../components/OrderManagementModal';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import ActionMenu from '../../components/ActionMenu';
+import InvoiceModal from '../../components/InvoiceModal';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -43,6 +44,7 @@ const Orders = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState(new Set());
+  const [showInvoice, setShowInvoice] = useState(false);
 
   useEffect(() => {
     const unsubscribe = subscribeToOrders((data) => {
@@ -105,6 +107,11 @@ const Orders = () => {
     } catch {
       toast('Failed to delete order.', 'error');
     }
+  };
+
+  const handlePrintInvoice = (order) => {
+    setSelectedOrder(order);
+    setShowInvoice(true);
   };
 
   // --- Bulk Actions ---
@@ -310,7 +317,7 @@ const Orders = () => {
                       options={[
                         { label: 'View Details', icon: Eye, onClick: () => handleViewDetails(order) },
                         { label: 'Mark as Shipped', icon: Truck, onClick: () => handleMarkShipped(order) },
-                        { label: 'Print Invoice', icon: FileText, onClick: () => toast('Invoice generation coming soon.', 'info') },
+                        { label: 'Print Invoice', icon: FileText, onClick: () => handlePrintInvoice(order) },
                         { label: 'Cancel Order', icon: Trash2, destructive: true, onClick: () => handleDeleteClick(order) }
                       ]}
                     />
@@ -380,6 +387,12 @@ const Orders = () => {
           { label: 'Mark Delivered', icon: CheckCircle2, variant: 'success', onClick: () => handleBulkStatusUpdate('Delivered') },
           { label: 'Delete', icon: Trash2, variant: 'danger', onClick: handleBulkDelete }
         ]}
+      />
+
+      <InvoiceModal 
+        isOpen={showInvoice}
+        onClose={() => setShowInvoice(false)}
+        order={selectedOrder}
       />
     </div>
   );
