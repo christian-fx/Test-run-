@@ -1,36 +1,79 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Banani Theme Tokens */
+  /* Banani Theme Tokens - Light */
   --background: #ffffff;
-  --foreground: #000000;
-  --border: #e8e8e8;
-  --input: #f8f8f7;
+  --foreground: #09090b;
+  --border: #e4e4e7;
+  --input: #f4f4f5;
   --primary: #277eff;
   --primary-foreground: #ffffff;
-  --secondary: #dbe7fb;
+  --secondary: #eff6ff;
   --secondary-foreground: #277eff;
-  --muted: #e8e8e8;
-  --muted-foreground: #949494;
-  --success: #00c417;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --success: #059669;
   --success-foreground: #ffffff;
-  --accent: #277eff;
-  --accent-foreground: #ffffff;
-  --destructive: #ff0000;
-  --destructive-foreground: #ffffff;
-  --warning: #ff7308;
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  --warning: #f59e0b;
   --warning-foreground: #ffffff;
-  --card: #fbfaf9;
-  --card-foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #09090b;
   --sidebar: #ffffff;
-  --sidebar-foreground: #4a4a4a;
-  --sidebar-primary: #e8e8e8;
-  --sidebar-primary-foreground: #000000;
+  --sidebar-foreground: #3f3f46;
+  --sidebar-primary: #f4f4f5;
+  --sidebar-primary-foreground: #18181b;
 
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 24px;
+
+  /* Elevation Surface (for color-mix) */
+  --surface: white;
+
+  /* Native UI Theme */
+  color-scheme: light;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --border: #27272a;
+  --input: #18181b;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #fafafa;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --success: #10b981;
+  --destructive: #ef4444;
+  --card: #18181b; 
+  --card-foreground: #fafafa;
+  --sidebar: #09090b;
+  --sidebar-foreground: #a1a1aa;
+  --sidebar-primary: #1e293b;
+  --sidebar-primary-foreground: #fafafa;
+
+  /* Elevation Surface (for color-mix) */
+  --surface: #18181b;
+
+  /* Native UI Theme */
+  color-scheme: dark;
+}
+
+/* Global Select & Option fixes for Dark Mode */
+select option {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 * {

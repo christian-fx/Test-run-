@@ -3,7 +3,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  background: rgba(31, 32, 35, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,7 +70,7 @@
 .modal-footer {
   padding: 22px 36px;
   border-top: 1px solid var(--border);
-  background: color-mix(in srgb, var(--secondary) 28%, white 72%);
+  background: color-mix(in srgb, var(--secondary) 28%, var(--surface) 72%);
   display: flex;
   justify-content: flex-end;
   gap: 12px;
@@ -103,7 +103,7 @@
 }
 
 .section-panel {
-  background: color-mix(in srgb, var(--input) 55%, white 45%);
+  background: color-mix(in srgb, var(--input) 55%, var(--surface) 45%);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 20px;

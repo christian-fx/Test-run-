@@ -19,9 +19,12 @@ import {
   User,
   Bell,
   CreditCard,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Sun,
+  Moon
 } from 'lucide-react';
 import './Layout.css';
+import { useTheme } from '../../hooks/useTheme';
 
 // API
 import { logout } from '../../api/auth';
@@ -168,6 +171,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
 const Header = ({ onMenuToggle }) => {
   const { user, loading } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const profileImg = user?.profile?.avatar || (user?.email ? `https://ui-avatars.com/api/?name=${user.email}&background=random` : null);
 
@@ -188,6 +192,13 @@ const Header = ({ onMenuToggle }) => {
       </button>
       <GlobalSearch />
       <div className="header-actions">
+        <button 
+          className="theme-toggle-btn" 
+          onClick={toggleTheme}
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+        >
+          {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+        </button>
         <NotificationBell />
         <img 
           src={profileImg || null} 

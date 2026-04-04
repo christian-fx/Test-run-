@@ -78,14 +78,21 @@ const NotificationBell = () => {
       {isOpen && (
         <div className="notification-dropdown">
            <div className="dropdown-header">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm">Notifications</span>
-                <button className="close-btn" onClick={() => setIsOpen(false)}>
-                  <X size={16} />
-                </button>
+              <div className="flex items-center justify-between mb-4">
+                <span className="dropdown-title">Notifications</span>
+                <div className="flex items-center gap-2">
+                  {unreadCount > 0 && (
+                    <button className="mark-all-read-btn" onClick={handleReadAll}>
+                      <Check size={14} /> Mark all read
+                    </button>
+                  )}
+                  <button className="close-btn" onClick={() => setIsOpen(false)}>
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
               
-              <div className="dropdown-tabs mt-3">
+              <div className="dropdown-tabs">
                 <button 
                   className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`} 
                   onClick={() => setActiveTab('all')}
@@ -96,18 +103,19 @@ const NotificationBell = () => {
                   className={`tab-btn ${activeTab === 'unread' ? 'active' : ''}`} 
                   onClick={() => setActiveTab('unread')}
                 >
-                  Unread {unreadCount > 0 && `(${unreadCount})`}
+                  Unread {unreadCount > 0 && <span className="tab-count">{unreadCount}</span>}
                 </button>
               </div>
            </div>
 
            <div className="dropdown-body">
              {filteredNotes.length === 0 ? (
-                <div className="empty-state">
-                   <div className="icon-circle mb-2">
-                     <CheckCircle2 size={24} className="text-muted" />
+                <div className="notes-empty">
+                   <div className="empty-icon">
+                     <CheckCircle2 size={32} />
                    </div>
-                   <div className="text-xs text-muted">You're all caught up!</div>
+                   <p>All caught up!</p>
+                   <span>No new notifications at this time.</span>
                 </div>
              ) : (
                 filteredNotes.map(note => (
@@ -116,15 +124,19 @@ const NotificationBell = () => {
                     className={`notification-item ${note.status === 'unread' ? 'unread' : ''}`}
                     onClick={() => note.status === 'unread' && handleMarkRead(note.id)}
                   >
-                    <div className="flex gap-3">
-                      <div className="icon-wrapper">{getIcon(note.type)}</div>
-                      <div className="content">
-                        <div className="flex items-center justify-between">
-                            <div className="title">{note.title}</div>
-                            {note.status === 'unread' && <div className="unread-dot" />}
+                    <div className="notification-inner">
+                      <div className={`notification-icon-box ${note.type}`}>
+                        {getIcon(note.type)}
+                      </div>
+                      <div className="notification-content">
+                        <div className="notification-top">
+                            <span className="notification-label">{note.title}</span>
+                            <span className="notification-time">
+                              {new Date(note.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
                         </div>
-                        <div className="message">{note.message}</div>
-                        <div className="time">{new Date(note.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                        <div className="notification-message">{note.message}</div>
+                        {note.status === 'unread' && <div className="unread-indicator" />}
                       </div>
                     </div>
                   </div>
@@ -132,13 +144,11 @@ const NotificationBell = () => {
              )}
            </div>
 
-           {unreadCount > 0 && (
-              <div className="dropdown-footer">
-                <button className="read-all-btn" onClick={handleReadAll}>
-                  <Check size={14} /> Mark all as read
-                </button>
-              </div>
-           )}
+           <div className="dropdown-footer">
+             <button className="view-all-btn">
+               View all activity
+             </button>
+           </div>
         </div>
       )}
     </div>
