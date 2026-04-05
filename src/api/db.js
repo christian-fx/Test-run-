@@ -68,8 +68,13 @@ export const subscribeToCollection = (table, callback, orderField = "created_at"
   const channelName = `${table}_${Math.random().toString(36).substring(7)}`;
   const subscription = supabase
     .channel(channelName)
-    .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
+    .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: table // Ensures we match exactly the table name
+    }, (payload) => {
       // Re-fetch everything on any change (simplest for small admin collections)
+      console.log(`[Realtime Update] Table: ${table}`, payload);
       getCollection(table, orderField).then(callback);
     })
     .subscribe();

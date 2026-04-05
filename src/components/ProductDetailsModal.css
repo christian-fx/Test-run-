@@ -340,3 +340,45 @@
   background: var(--secondary);
   color: var(--secondary-foreground);
 }
+
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 12px;
+  }
+
+  .modal {
+    max-height: 96vh;
+    border-radius: var(--radius-md);
+  }
+
+  .modal-header, .modal-body, .modal-footer {
+    padding: 16px 20px;
+  }
+
+  .modal-footer {
+    flex-direction: row; /* Force side-by-side */
+    align-items: center;
+    background: var(--card);
+    gap: 8px; /* Tighter gap for mobile */
+    padding: 16px;
+  }
+
+  .modal-footer .btn {
+    flex: 1;
+    padding: 0 8px;
+    font-size: 13px; /* Slightly smaller font for mobile fit */
+  }
+
+  .details-grid, .grid-2-custom {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+
+  .section-panel {
+    padding: 16px;
+  }
+
+  .image-wrapper {
+    aspect-ratio: 16/9; /* Wider images for mobile feel */
+  }
+}

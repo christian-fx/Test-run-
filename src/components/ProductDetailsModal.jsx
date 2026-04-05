@@ -204,18 +204,15 @@ const ProductDetailsModal = ({ isOpen, onClose, product, onEdit, onArchive }) =>
         </div>
 
         {/* Footer */}
-        <div className="modal-footer">
-          <div className="btn btn-outline" onClick={() => onArchive(product)} style={{ color: 'var(--destructive)', borderColor: 'rgb(255 0 0 / 0.3)' }}>
+        <div className="modal-footer footer-dual-actions">
+          <button className="btn btn-outline" onClick={() => onArchive(product)} style={{ color: 'var(--destructive)', borderColor: 'rgb(255 0 0 / 0.3)', flex: 1 }}>
             <Archive size={16} />
             Archive Product
-          </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button className="btn btn-subtle" onClick={onClose}>Close</button>
-            <button className="btn btn-primary" onClick={() => onEdit(product)}>
-              <Pencil size={16} />
-              Edit Product
-            </button>
-          </div>
+          </button>
+          <button className="btn btn-primary" onClick={() => onEdit(product)} style={{ flex: 1 }}>
+            <Pencil size={16} />
+            Edit Product
+          </button>
         </div>
 
       </div>

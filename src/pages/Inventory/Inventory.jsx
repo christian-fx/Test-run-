@@ -76,11 +76,27 @@ const Inventory = () => {
   const totalUnits = inventory.reduce((sum, item) => sum + item.stock, 0);
 
   const handleRestockSubmit = async () => {
-    if (!restockItem || restockAmount <= 0) return;
+    if (!restockItem) return;
+    const change = Number(restockAmount);
+    if (isNaN(change)) return;
+
+    // Safety check: Don't allow stock to go below 0
+    const newTotal = restockItem.stock + change;
+    if (newTotal < 0) {
+      alert(`Cannot reduce stock below 0. This item currently has ${restockItem.stock} units.`);
+      return;
+    }
+
     setUpdating(true);
     try {
       const fullNote = restockNote ? `${restockReason}: ${restockNote}` : restockReason;
-      await restockProduct(restockItem.id, restockItem.stock, Number(restockAmount), 'Restock', fullNote);
+      await restockProduct(restockItem.id, restockItem.stock, change, change >= 0 ? 'Restock' : 'Reduction', fullNote);
+      
+      // Manual re-fetch fallback for stock logs
+      const { getRecentLogs } = await import('../../api/inventory');
+      const latestLogs = await getRecentLogs();
+      setStockLogs(latestLogs);
+
       setRestockItem(null);
       setRestockAmount(10);
       setRestockNote('');
@@ -101,6 +117,11 @@ const Inventory = () => {
         await Promise.all(lowStockItems.map(item => 
           restockProduct(item.id, item.stock, 50, 'Batch Restock')
         ));
+        
+        // Manual re-fetch fallback for stock logs
+        const { getRecentLogs } = await import('../../api/inventory');
+        const latestLogs = await getRecentLogs();
+        setStockLogs(latestLogs);
       } catch (error) {
         console.error("Batch restock failed:", error);
       } finally {
@@ -279,7 +300,6 @@ const Inventory = () => {
                   type="number" 
                   value={restockAmount} 
                   onChange={(e) => setRestockAmount(e.target.value)}
-                  min="1"
                 />
               </div>
               <div className="input-group">
