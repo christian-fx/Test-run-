@@ -126,57 +126,59 @@ const Team = () => {
            </div>
         </div>
         <div className="form-card-body" style={{ padding: 0 }}>
-           <table className="table-w full-width">
-              <thead>
-                 <tr>
-                    <th style={{ paddingLeft: '24px' }}>Member</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th style={{ textAlign: 'right', paddingRight: '24px' }}>Actions</th>
-                 </tr>
-              </thead>
-              <tbody>
-                 {teamMembers.map((member) => (
-                    <tr key={member.id}>
-                       <td style={{ paddingLeft: '24px' }}>
-                          <div className="flex items-center gap-3">
-                             <img 
-                                src={member.avatar || `https://ui-avatars.com/api/?name=${member.name}&background=random`} 
-                                alt="Avatar" 
-                                className="avatar mini" 
-                                style={{ width: '32px', height: '32px', borderRadius: '50%' }} 
-                             />
-                             <div>
-                                <div className="font-medium text-sm">{member.name}</div>
-                                <div className="text-xs text-muted">{member.email}</div>
-                             </div>
-                          </div>
-                       </td>
-                       <td>
-                          <div className="flex items-center gap-1.5">
-                             <Shield size={14} className="text-primary" />
-                             <span className="text-sm font-medium">{member.role}</span>
-                          </div>
-                       </td>
-                       <td>
-                          <span className={`badge badge-${member.status === 'Active' ? 'success' : 'destructive'}`}>
-                             {member.status}
-                          </span>
-                       </td>
-                       <td style={{ textAlign: 'right', paddingRight: '24px' }}>
-                          <div className="flex items-center justify-end gap-2">
-                             <button className="btn btn-subtle sm" onClick={() => handleStatusToggle(member)}>
-                                {member.status === 'Active' ? 'Suspend' : 'Reactivate'}
-                             </button>
-                             <button className="icon-btn sm text-destructive" onClick={() => handleDeleteMember(member)}>
-                                <Trash2 size={14} />
-                             </button>
-                          </div>
-                       </td>
+           <div className="table-responsive-container">
+              <table className="table-w full-width">
+                 <thead>
+                    <tr>
+                       <th style={{ paddingLeft: '24px' }}>Member</th>
+                       <th>Role</th>
+                       <th>Status</th>
+                       <th style={{ textAlign: 'right', paddingRight: '24px' }}>Actions</th>
                     </tr>
-                 ))}
-              </tbody>
-           </table>
+                 </thead>
+                 <tbody>
+                    {teamMembers.map((member) => (
+                       <tr key={member.id}>
+                          <td style={{ paddingLeft: '24px' }}>
+                             <div className="flex items-center gap-3">
+                                <img 
+                                   src={member.avatar || `https://ui-avatars.com/api/?name=${member.name}&background=random`} 
+                                   alt="Avatar" 
+                                   className="avatar mini" 
+                                   style={{ width: '32px', height: '32px', borderRadius: '50%' }} 
+                                />
+                                <div>
+                                   <div className="font-medium text-sm">{member.name}</div>
+                                   <div className="text-xs text-muted">{member.email}</div>
+                                </div>
+                             </div>
+                          </td>
+                          <td>
+                             <div className="flex items-center gap-1.5">
+                                <Shield size={14} className="text-primary" />
+                                <span className="text-sm font-medium">{member.role}</span>
+                             </div>
+                          </td>
+                          <td>
+                             <span className={`badge badge-${member.status === 'Active' ? 'success' : 'destructive'}`}>
+                                {member.status}
+                             </span>
+                          </td>
+                          <td style={{ textAlign: 'right', paddingRight: '24px' }}>
+                             <div className="flex items-center justify-end gap-2">
+                                <button className="btn btn-subtle sm" onClick={() => handleStatusToggle(member)}>
+                                   {member.status === 'Active' ? 'Suspend' : 'Reactivate'}
+                                </button>
+                                <button className="icon-btn sm text-destructive" onClick={() => handleDeleteMember(member)}>
+                                   <Trash2 size={14} />
+                                </button>
+                             </div>
+                          </td>
+                       </tr>
+                    ))}
+                 </tbody>
+              </table>
+           </div>
         </div>
       </div>
 

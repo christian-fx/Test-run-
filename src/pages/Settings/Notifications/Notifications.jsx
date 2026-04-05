@@ -130,7 +130,7 @@ const Notifications = () => {
            </div>
         </div>
         <div className="form-card-body" style={{ padding: 0 }}>
-           <div className="notification-table-wrapper">
+           <div className="table-responsive-container">
               <table className="table-w full-width">
                  <thead>
                     <tr>

@@ -74,29 +74,25 @@
     padding: 16px;
   }
 
-  /* When in edit mode the header wraps: title row on top, buttons below */
+  /* Header wraps naturally, but buttons do NOT span full width */
   .form-card-header .flex.items-center.justify-between.w-full {
     flex-wrap: wrap;
     gap: 12px;
+    justify-content: flex-start;
   }
 
-  /* Edit buttons stack vertically with natural (content) width */
-  .form-card-header .flex.gap-2 {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    width: 100%;
-  }
-
-  /* Slightly smaller buttons on mobile */
+  /* Ensure the button stays at its natural content-based width */
   .form-card-header .btn {
     font-size: 13px;
-    padding: 6px 12px;
-    min-height: 36px;
+    padding: 8px 16px;
+    min-height: 38px;
+    width: auto; 
+    flex-shrink: 0;
   }
 
   .form-card-title {
-    font-size: 14px;
+    font-size: 15px;
+    width: 100%; /* Title takes top row if wrapped */
   }
 
   .form-card-desc {
@@ -105,6 +101,25 @@
 
   .form-card-body {
     padding: 16px;
+  }
+}
+
+/* Responsive Table Wrapper */
+.table-responsive-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: inherit;
+}
+
+/* Ensure tables inside the responsive container don't shrink too much */
+.table-responsive-container .table-w {
+  min-width: 600px;
+}
+
+@media (max-width: 480px) {
+  .table-responsive-container .table-w {
+    min-width: 500px;
   }
 }
 
