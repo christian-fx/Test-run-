@@ -4,16 +4,14 @@
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  padding: 24px 16px;
   flex-shrink: 0;
   height: 100vh;
   position: sticky;
   top: 0;
   z-index: 100;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  /* Scroll is handled by .sidebar-nav now */
+  overflow: hidden;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -24,6 +22,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
+  padding: 24px 28px 8px; /* Balanced top area */
+}
+
+/* New Scrollable Nav Layer */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 16px;
+  margin-top: 8px;
+  scrollbar-width: none; /* Keep minimal aesthetic */
+  -ms-overflow-style: none;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebar-footer {
+  flex-shrink: 0;
+  padding: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
 }
 
 .sidebar-close-btn {
@@ -64,8 +84,8 @@
   font-size: 18px;
   font-weight: 700;
   color: var(--sidebar-foreground);
-  margin-bottom: 32px;
-  padding: 0 12px;
+  padding: 0;
+  margin: 0;
 }
 
 .logo-icon {
@@ -150,6 +170,19 @@
   margin-left: 16px;
 }
 
+@media (max-width: 1024px) {
+  .nav-item-container.is-expanded > .nav-item {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--sidebar);
+    border-radius: var(--radius-md);
+    margin-bottom: 2px;
+    box-shadow: 0 4px 12px -8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Ensure sub-list is hidden on desktop to keep sidebar clean */
 @media (min-width: 1025px) {
   .nav-sub-list {
     display: none;

@@ -134,64 +134,66 @@ const Sidebar = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {navGroups.map((group, idx) => (
-          <div key={idx} className="nav-section">
-            <div className="nav-section-title">{group.title}</div>
-            <div className="nav-list">
-              {group.items.map((item) => {
-                const isSettings = item.label === 'Settings';
-                return (
-                  <div key={item.path} className="nav-item-container">
-                    <NavLink
-                      to={item.path}
-                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                      onClick={(e) => {
-                        const isMobile = window.innerWidth <= 1024;
-                        if (isSettings && isMobile) {
-                          e.preventDefault();
-                          item.onToggle();
-                          if (!settingsExpanded) {
-                            navigate('/settings/general');
+        <nav className="sidebar-nav">
+          {navGroups.map((group, idx) => (
+            <div key={idx} className="nav-section">
+              <div className="nav-section-title">{group.title}</div>
+              <div className="nav-list">
+                {group.items.map((item) => {
+                  const isSettings = item.label === 'Settings';
+                  return (
+                    <div key={item.path} className={`nav-item-container ${item.isExpanded ? 'is-expanded' : ''}`}>
+                      <NavLink
+                        to={item.path}
+                        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                        onClick={(e) => {
+                          const isMobile = window.innerWidth <= 1024;
+                          if (isSettings && isMobile) {
+                            e.preventDefault();
+                            item.onToggle();
+                            if (!settingsExpanded) {
+                              navigate('/settings/general');
+                            }
+                          } else {
+                            onClose();
                           }
-                        } else {
-                          onClose();
-                        }
-                      }}
-                    >
-                      <div className="icon-wrapper">
-                        <item.icon size={20} />
-                      </div>
-                      <span style={{ flex: 1 }}>{item.label}</span>
-                      {item.hasChildren && (
-                        <div className="chevron-wrapper">
-                          {item.isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        }}
+                      >
+                        <div className="icon-wrapper">
+                          <item.icon size={20} />
+                        </div>
+                        <span style={{ flex: 1 }}>{item.label}</span>
+                        {item.hasChildren && (
+                          <div className="chevron-wrapper">
+                            {item.isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                          </div>
+                        )}
+                      </NavLink>
+
+                      {item.hasChildren && item.isExpanded && (
+                        <div className="nav-sub-list">
+                          {item.children.map(child => (
+                            <NavLink
+                              key={child.path}
+                              to={child.path}
+                              className={({ isActive }) => `nav-sub-item ${isActive ? 'active' : ''}`}
+                              onClick={onClose}
+                            >
+                              <div className="icon-wrapper">
+                                <child.icon size={16} />
+                              </div>
+                              {child.label}
+                            </NavLink>
+                          ))}
                         </div>
                       )}
-                    </NavLink>
-
-                    {item.hasChildren && item.isExpanded && (
-                      <div className="nav-sub-list">
-                        {item.children.map(child => (
-                          <NavLink
-                            key={child.path}
-                            to={child.path}
-                            className={({ isActive }) => `nav-sub-item ${isActive ? 'active' : ''}`}
-                            onClick={onClose}
-                          >
-                            <div className="icon-wrapper">
-                              <child.icon size={16} />
-                            </div>
-                            {child.label}
-                          </NavLink>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </nav>
 
         <div className="sidebar-footer">
           <button className="nav-item logout-btn" onClick={logout}>
