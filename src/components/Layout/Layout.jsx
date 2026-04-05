@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { 
-  Zap, 
-  LayoutDashboard, 
-  ShoppingCart, 
-  Smartphone, 
-  FolderTree, 
-  Users, 
-  Settings, 
-  Search, 
+import {
+  Zap,
+  LayoutDashboard,
+  ShoppingCart,
+  Smartphone,
+  FolderTree,
+  Users,
+  Settings,
+  Search,
   LogOut,
   Loader2,
   Menu,
@@ -96,9 +96,9 @@ const Sidebar = ({ isOpen, onClose }) => {
     {
       title: 'System',
       items: [
-        { 
-          label: 'Settings', 
-          path: '/settings', 
+        {
+          label: 'Settings',
+          path: '/settings',
           icon: Settings,
           hasChildren: true,
           isExpanded: settingsExpanded,
@@ -142,8 +142,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                 const isSettings = item.label === 'Settings';
                 return (
                   <div key={item.path} className="nav-item-container">
-                    <NavLink 
-                      to={item.path} 
+                    <NavLink
+                      to={item.path}
                       className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                       onClick={(e) => {
                         const isMobile = window.innerWidth <= 1024;
@@ -151,7 +151,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                           e.preventDefault();
                           item.onToggle();
                           if (!settingsExpanded) {
-                             navigate('/settings/general');
+                            navigate('/settings/general');
                           }
                         } else {
                           onClose();
@@ -168,13 +168,13 @@ const Sidebar = ({ isOpen, onClose }) => {
                         </div>
                       )}
                     </NavLink>
-                    
+
                     {item.hasChildren && item.isExpanded && (
                       <div className="nav-sub-list">
                         {item.children.map(child => (
-                          <NavLink 
-                            key={child.path} 
-                            to={child.path} 
+                          <NavLink
+                            key={child.path}
+                            to={child.path}
                             className={({ isActive }) => `nav-sub-item ${isActive ? 'active' : ''}`}
                             onClick={onClose}
                           >
@@ -216,7 +216,7 @@ const Header = ({ onMenuToggle }) => {
     return (
       <header className="header">
         <div className="flex items-center justify-center w-full">
-           <Loader2 size={16} className="animate-spin text-muted" />
+          <Loader2 size={16} className="animate-spin text-muted" />
         </div>
       </header>
     );
@@ -229,20 +229,17 @@ const Header = ({ onMenuToggle }) => {
       </button>
       <GlobalSearch />
       <div className="header-actions">
-        <button 
-          className="theme-toggle-btn" 
-          onClick={toggleTheme}
-          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-        </button>
-        <NotificationBell />
-        <img 
-          src={profileImg || null} 
-          alt="User Avatar" 
-          className="avatar" 
-          style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
-        />
+        <div className="system-actions">
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          >
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+          <NotificationBell />
+          <img src={profileImg || null} alt="User Avatar" className="avatar" />
+        </div>
       </div>
     </header>
   );
