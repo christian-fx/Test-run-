@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Plus, 
   Search, 
@@ -29,8 +29,10 @@ import { SkeletonStat, SkeletonRow } from '../../components/Skeleton';
 import EmptyState from '../../components/EmptyState';
 
 // API
-import { subscribeToCategories, deleteCategory } from '../../api/categories';
-import { subscribeToProducts } from '../../api/products';
+import { deleteCategory } from '../../api/categories';
+
+// Context
+import { useCatalog } from '../../context/useCatalog';
 
 // Components
 import AddCategoryModal from '../../components/AddCategoryModal';
@@ -58,9 +60,7 @@ const iconMap = {
 };
 
 const Categories = () => {
-  const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { categories, products, loading } = useCatalog();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -80,25 +80,6 @@ const Categories = () => {
     setModalMode('edit');
     setShowAddModal(true);
   };
-
-  useEffect(() => {
-    // 1. Subscribe to Categories
-    // 1. Subscribe to Categories
-    const unsubscribeCats = subscribeToCategories((data) => {
-      setCategories(data);
-      setLoading(false); // Resolve loading as soon as categories arrive
-    });
-
-    // 2. Subscribe to Products for Dynamic Counting
-    const unsubscribeProds = subscribeToProducts((data) => {
-      setProducts(data);
-    });
-
-    return () => {
-      unsubscribeCats();
-      unsubscribeProds();
-    };
-  }, []);
 
   const getProductCount = (categoryName) => {
     return products.filter(p => 

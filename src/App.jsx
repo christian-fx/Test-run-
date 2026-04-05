@@ -20,6 +20,7 @@ import Shipping from './pages/Logistics/Shipping';
 // Context
 import { AuthProvider } from './context/AuthContext';
 import { CurrencyProvider } from './context/CurrencyProvider';
+import { CatalogProvider } from './context/CatalogProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastProvider } from './components/Toast';
 
@@ -31,37 +32,39 @@ function App() {
       <CurrencyProvider>
         <AuthProvider>
           <ToastProvider>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/login" element={<Login />} />
+            <CatalogProvider>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/login" element={<Login />} />
 
-              {/* Protected Admin Routes */}
-              <Route 
-                path="/*" 
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/orders" element={<Orders />} />
-                        <Route path="/products" element={<Products />} />
-                        <Route path="/categories" element={<Categories />} />
-                        <Route path="/inventory" element={<Inventory />} />
-                        <Route path="/customers" element={<Customers />} />
-                        <Route path="/customers/reviews" element={<Reviews />} />
-                        <Route path="/finance/transactions" element={<Transactions />} />
-                        <Route path="/marketing/discounts" element={<Discounts />} />
-                        <Route path="/marketing/promotions" element={<Promotions />} />
-                        <Route path="/logistics/shipping" element={<Shipping />} />
-                        <Route path="/settings" element={<Navigate to="/settings/general" replace />} />
-                        <Route path="/settings/*" element={<Settings />} />
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                      </Routes>
-                    </Layout>
-                  </ProtectedRoute>
-                } 
-              />
-            </Routes>
+                {/* Protected Admin Routes */}
+                <Route 
+                  path="/*" 
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Routes>
+                          <Route path="/" element={<Dashboard />} />
+                          <Route path="/orders" element={<Orders />} />
+                          <Route path="/products" element={<Products />} />
+                          <Route path="/categories" element={<Categories />} />
+                          <Route path="/inventory" element={<Inventory />} />
+                          <Route path="/customers" element={<Customers />} />
+                          <Route path="/customers/reviews" element={<Reviews />} />
+                          <Route path="/finance/transactions" element={<Transactions />} />
+                          <Route path="/marketing/discounts" element={<Discounts />} />
+                          <Route path="/marketing/promotions" element={<Promotions />} />
+                          <Route path="/logistics/shipping" element={<Shipping />} />
+                          <Route path="/settings" element={<Navigate to="/settings/general" replace />} />
+                          <Route path="/settings/*" element={<Settings />} />
+                          <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                      </Layout>
+                    </ProtectedRoute>
+                  } 
+                />
+              </Routes>
+            </CatalogProvider>
           </ToastProvider>
         </AuthProvider>
       </CurrencyProvider>

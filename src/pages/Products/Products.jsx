@@ -21,7 +21,7 @@ import { SkeletonStat, SkeletonRow } from '../../components/Skeleton';
 import EmptyState from '../../components/EmptyState';
 
 // API
-import { subscribeToProducts, deleteProduct } from '../../api/products';
+import { deleteProduct } from '../../api/products';
 import { createNotification, getNotifications } from '../../api/notifications';
 
 // Components
@@ -33,14 +33,14 @@ import BulkActionBar from '../../components/BulkActionBar';
 
 // Context
 import { useCurrency } from '../../hooks/useCurrency';
+import { useCatalog } from '../../context/useCatalog';
 
 const ITEMS_PER_PAGE = 10;
 
 const Products = () => {
   const { formatPrice } = useCurrency();
+  const { products, loading } = useCatalog();
   const toast = useToast();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -48,9 +48,13 @@ const Products = () => {
   const [modalMode, setModalMode] = useState('add');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [brandFilter, setBrandFilter] = useState('All');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState(new Set());
+
+  // Dynamic Brands list for filter
+  const uniqueBrands = [...new Set(products.map(p => p.brand).filter(Boolean))].sort();
 
   const handleAddClick = () => {
     setSelectedProduct(null);
@@ -65,13 +69,10 @@ const Products = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = subscribeToProducts((data) => {
-      setProducts(data);
-      setLoading(false);
-      checkStockAlerts(data);
-    });
-    return () => unsubscribe();
-  }, []);
+    if (!loading && products.length > 0) {
+      checkStockAlerts(products);
+    }
+  }, [products, loading]);
 
   const checkStockAlerts = async (allProducts) => {
     try {
@@ -121,7 +122,12 @@ const Products = () => {
       const matchesStatus = statusFilter === 'All' || 
                             (product.status === statusFilter) || 
                             (statusFilter === 'Published' && product.status === 'Active');
-      return matchesSearch && matchesStatus;
+      
+      const matchesBrand = brandFilter === 'All' || 
+                           (brandFilter === 'No Brand' && !product.brand) ||
+                           (product.brand === brandFilter);
+                           
+      return matchesSearch && matchesStatus && matchesBrand;
     })
     .sort((a, b) => {
       if (sortBy === 'newest') {
@@ -296,6 +302,17 @@ const Products = () => {
             </select>
             <ChevronDown className="chevron-icon" size={14} />
           </div>
+
+          {/* BRAND FILTER */}
+          <div className="filter-select" style={{ minWidth: '130px' }}>
+            <label>Brand:</label>
+            <select value={brandFilter} onChange={(e) => { setBrandFilter(e.target.value); setCurrentPage(1); }}>
+              <option value="All">All Brands</option>
+              {uniqueBrands.map(b => <option key={b} value={b}>{b}</option>)}
+              <option value="No Brand">Unbranded</option>
+            </select>
+            <ChevronDown className="chevron-icon" size={14} />
+          </div>
         </div>
         <div className="filter-select" style={{ minWidth: '160px' }}>
           <label>Sort:</label>
@@ -323,7 +340,7 @@ const Products = () => {
                   />
                 </th>
                 <th>Product</th>
-                <th>SKU</th>
+                <th>Brand</th>
                 <th>Category</th>
                 <th>Price</th>
                 <th>Stock</th>
@@ -369,7 +386,7 @@ const Products = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="text-muted">{product.sku || 'N/A'}</td>
+                  <td className="text-muted">{product.brand || '-'}</td>
                   <td>{product.category || 'Uncategorized'}</td>
                   <td className="font-medium">{formatPrice(product.price)}</td>
                   <td>

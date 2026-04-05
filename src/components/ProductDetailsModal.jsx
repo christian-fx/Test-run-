@@ -39,7 +39,10 @@ const ProductDetailsModal = ({ isOpen, onClose, product, onEdit, onArchive }) =>
                   <div className="detail-value" style={{ fontSize: '20px', fontWeight: 600, marginBottom: '4px' }}>
                     {product.name}
                   </div>
-                  <div className="detail-subvalue">Category: {product.category || 'Uncategorized'}</div>
+                  <div className="detail-subvalue">
+                    Category: {product.category || 'Uncategorized'}
+                    {product.brand && <span className="brand-dot-separator"> • Brand: {product.brand}</span>}
+                  </div>
                   
                   <div className="description-text">
                     {product.description || 'No description provided.'}
@@ -53,6 +56,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product, onEdit, onArchive }) =>
                       {product.status || 'Draft'}
                     </span>
                     <span className="badge badge-primary">{product.visibility || 'Public'}</span>
+                    {product.brand && <span className="badge badge-subtle">{product.brand}</span>}
                     {product.isFeatured && <span className="badge badge-warning">Featured</span>}
                   </div>
                 </div>

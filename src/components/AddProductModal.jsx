@@ -16,18 +16,19 @@ import { Link } from 'react-router-dom';
 // API
 import { uploadImage } from '../api/cloudinary';
 import { addProduct, updateProduct } from '../api/products';
-import { subscribeToCategories } from '../api/categories';
+// Context
+import { useCatalog } from '../context/useCatalog';
 
 const AddProductModal = ({ isOpen, onClose, mode = 'add', product = null }) => {
+  const { categories, loading: categoriesLoading, getBrandsForCategory } = useCatalog();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
   
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     category: '',
+    brand: '',
     price: '',
     discountPrice: '',
     stock: '',
@@ -52,6 +53,7 @@ const AddProductModal = ({ isOpen, onClose, mode = 'add', product = null }) => {
         name: product.name || '',
         description: product.description || '',
         category: product.category || '',
+        brand: product.brand || '',
         price: product.price || '',
         discountPrice: product.discountPrice || '',
         stock: product.stock || '',
@@ -72,7 +74,8 @@ const AddProductModal = ({ isOpen, onClose, mode = 'add', product = null }) => {
       setFormData({
         name: '',
         description: '',
-        category: '',
+        category: categories.length > 0 ? categories[0].name : '',
+        brand: '',
         price: '',
         discountPrice: '',
         stock: '',
@@ -88,22 +91,7 @@ const AddProductModal = ({ isOpen, onClose, mode = 'add', product = null }) => {
       setSpecs([{ key: '', value: '' }]);
       setVariants([]);
     }
-
-    setCategoriesLoading(true);
-    const unsubscribe = subscribeToCategories((data) => {
-      setCategories(data);
-      setCategoriesLoading(false);
-      
-      setFormData(prev => {
-        if (!prev.category && data.length > 0) {
-          return { ...prev, category: data[0].name };
-        }
-        return prev;
-      });
-    });
-
-    return () => unsubscribe();
-  }, [isOpen, mode, product]);
+  }, [isOpen, mode, product, categories]);
 
   if (!isOpen) return null;
 
@@ -301,6 +289,31 @@ const AddProductModal = ({ isOpen, onClose, mode = 'add', product = null }) => {
                     </Link>
                   </div>
                 )}
+              </div>
+
+              {/* BRAND SELECTION - Context Aware & Optional */}
+              <div className="form-group">
+                <div className="form-label text-xs uppercase tracking-wider opacity-60">Brand (Optional)</div>
+                <div className="form-input">
+                  <input 
+                    name="brand" 
+                    type="text" 
+                    list="brand-suggestions" 
+                    placeholder="Select or enter brand..." 
+                    value={formData.brand || ''} 
+                    onChange={handleInputChange} 
+                  />
+                  <datalist id="brand-suggestions">
+                    {(() => {
+                      const brands = getBrandsForCategory(formData.category);
+                      const uniqueBrands = [...new Set(brands)].filter(Boolean).sort();
+                      
+                      return uniqueBrands.map(b => (
+                        <option key={b} value={b} />
+                      ));
+                    })()}
+                  </datalist>
+                </div>
               </div>
             </div>
           </div>

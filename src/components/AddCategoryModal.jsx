@@ -20,7 +20,8 @@ import {
   Home,
   Zap,
   Wifi,
-  Trash2
+  Trash2,
+  Plus
 } from 'lucide-react';
 import './AddCategoryModal.css';
 
@@ -154,7 +155,23 @@ const AddCategoryModal = ({ isOpen, onClose, mode = 'add', category = null }) =>
     setSubcategories(next);
   };
 
-  const addSubcategory = () => setSubcategories([...subcategories, { name: '', slug: '' }]);
+  const handleAddBrand = (subIdx, brandName) => {
+    if (!brandName.trim()) return;
+    const next = [...subcategories];
+    const brands = next[subIdx].brands || [];
+    if (!brands.includes(brandName.trim())) {
+      next[subIdx].brands = [...brands, brandName.trim()];
+      setSubcategories(next);
+    }
+  };
+
+  const handleRemoveBrand = (subIdx, brandIdx) => {
+    const next = [...subcategories];
+    next[subIdx].brands = next[subIdx].brands.filter((_, i) => i !== brandIdx);
+    setSubcategories(next);
+  };
+
+  const addSubcategory = () => setSubcategories([...subcategories, { name: '', slug: '', brands: [] }]);
   const removeSubcategory = (index) => setSubcategories(subcategories.filter((_, i) => i !== index));
 
   const handleSubmit = async (e) => {
@@ -238,25 +255,51 @@ const AddCategoryModal = ({ isOpen, onClose, mode = 'add', category = null }) =>
           <div className="section">
             <div className="section-header">
               <div>
-                <div className="section-title">Subcategories</div>
-                <div className="section-subtitle">Slugs for sub-items are also automated in real-time.</div>
+                <div className="section-title">Subcategories & Brands</div>
+                <div className="section-subtitle">Define optional brands for each subcategory (comma-separated).</div>
               </div>
               <div className="btn btn-subtle" onClick={addSubcategory}>Add subcategory</div>
             </div>
             <div className="section-panel">
               {subcategories.map((sub, idx) => (
-                <div key={idx} className="subcategory-row">
-                  <div className="form-input">
-                    <input placeholder="Subcategory Name" value={sub.name} onChange={(e) => handleSubcategoryChange(idx, 'name', e.target.value)} />
-                  </div>
-                  <div className="form-input">
-                    <input placeholder="Slug" value={sub.slug} readOnly />
-                  </div>
-                  {subcategories.length > 1 && (
-                    <div className="btn-remove-icon" onClick={() => removeSubcategory(idx)}>
-                      <Trash2 size={16} />
+                <div key={idx} className="subcategory-management-row">
+                  <div className="subcategory-main-inputs">
+                    <div className="form-input">
+                      <input placeholder="Subcategory Name" value={sub.name} onChange={(e) => handleSubcategoryChange(idx, 'name', e.target.value)} />
                     </div>
-                  )}
+                    <div className="form-input">
+                      <input placeholder="Slug" value={sub.slug} readOnly />
+                    </div>
+                    {subcategories.length > 1 && (
+                      <div className="btn-remove-icon" onClick={() => removeSubcategory(idx)}>
+                        <Trash2 size={16} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="subcategory-brands-management">
+                    <div className="form-label text-xs" style={{ marginBottom: '8px', opacity: 0.7 }}>Manage Brands (Optional)</div>
+                    <div className="brand-tags-container">
+                      {sub.brands && sub.brands.map((brand, bIdx) => (
+                        <div key={bIdx} className="brand-tag">
+                          <span>{brand}</span>
+                          <X size={12} onClick={() => handleRemoveBrand(idx, bIdx)} />
+                        </div>
+                      ))}
+                      <div className="add-brand-input-wrapper">
+                        <input 
+                          placeholder="Add brand..." 
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddBrand(idx, e.target.value);
+                              e.target.value = '';
+                            }
+                          }}
+                        />
+                        <Plus size={14} className="add-icon" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
