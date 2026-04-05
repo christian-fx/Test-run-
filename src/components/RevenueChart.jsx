@@ -62,8 +62,21 @@ const RevenueChart = ({ orders = [], activeRange = 30, setActiveRange }) => {
   const totalRevenue = chartData.reduce((sum, d) => sum + d.revenue, 0);
   const totalOrders = chartData.reduce((sum, d) => sum + d.orders, 0);
 
-  // Tick interval based on range
-  const tickInterval = activeRange === 7 ? 0 : activeRange === 30 ? 4 : 11;
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 640);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Tick interval based on range & screen size
+  const tickInterval = React.useMemo(() => {
+    if (isMobile) {
+      return activeRange === 7 ? 1 : activeRange === 30 ? 6 : 14;
+    }
+    return activeRange === 7 ? 0 : activeRange === 30 ? 4 : 11;
+  }, [activeRange, isMobile]);
 
   const RANGES = [
     { label: '7D', value: 7 },
@@ -75,7 +88,7 @@ const RevenueChart = ({ orders = [], activeRange = 30, setActiveRange }) => {
     <div className="revenue-chart-card">
       <div className="chart-header">
         <div className="chart-header-left">
-          <div className="chart-title">Revenue Overview</div>
+          <div className="chart-title text-muted uppercase tracking-wider font-bold text-xs">Revenue Overview</div>
           <div className="chart-summary">
             <span className="chart-total">{formatPrice(totalRevenue)}</span>
             <span className="chart-orders-pill">{totalOrders} orders</span>
@@ -95,7 +108,7 @@ const RevenueChart = ({ orders = [], activeRange = 30, setActiveRange }) => {
       </div>
 
       <div className="chart-body">
-        <ResponsiveContainer width="100%" height={240}>
+        <ResponsiveContainer width="100%" height={isMobile ? 220 : 260}>
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
@@ -113,10 +126,10 @@ const RevenueChart = ({ orders = [], activeRange = 30, setActiveRange }) => {
             />
             <YAxis
               tickFormatter={formatCompactPrice}
-              tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
+              tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }}
               axisLine={false}
               tickLine={false}
-              width={50}
+              width={isMobile ? 35 : 45}
             />
             <Tooltip content={<CustomTooltip formatPrice={formatPrice} />} />
             <Area

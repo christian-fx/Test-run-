@@ -37,11 +37,13 @@ import { logout } from '../../api/auth';
 import { useAuth } from '../../context/useAuth';
 import NotificationBell from '../NotificationBell';
 import GlobalSearch from '../GlobalSearch';
+import ConfirmModal from '../ConfirmModal';
 import { subscribeToSettings } from '../../api/settings';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const [storeName, setStoreName] = useState('Go Gadget');
   const [settingsExpanded, setSettingsExpanded] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -196,13 +198,23 @@ const Sidebar = ({ isOpen, onClose }) => {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="nav-item logout-btn" onClick={logout}>
+          <button className="nav-item logout-btn" onClick={() => setIsLogoutModalOpen(true)}>
             <div className="icon-wrapper">
               <LogOut size={20} />
             </div>
             Logout
           </button>
         </div>
+
+        <ConfirmModal
+          isOpen={isLogoutModalOpen}
+          onClose={() => setIsLogoutModalOpen(false)}
+          onConfirm={logout}
+          title="Logout Confirmation"
+          message="Are you sure you want to log out of your administrative session?"
+          confirmLabel="Log Out"
+          type="destructive"
+        />
       </aside>
     </>
   );
